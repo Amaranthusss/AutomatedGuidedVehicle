@@ -100,9 +100,10 @@ io.sockets.on('connection', function (socket) {
         //console.log(frontScanner.printf());
         socket.emit("PROXIMITY_" + frontScanner.output);
         //console.log(frontScanner.output);
-        console.log(frontScannerKMeans.start(
-            frontScanner.output, //scanner's output
-        ));
+        async function run() {
+            await frontScannerKMeans.start(test)
+            await console.log(frontScannerKMeans.return())
+        } run();
         //console.log(frontScanner.output[frontScanner.output.length - 1].points);
         //console.log(frontScanner.output);
         //if (frontScanner.clear == true) 

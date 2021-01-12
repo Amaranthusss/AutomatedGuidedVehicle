@@ -66,36 +66,63 @@ class KMeans {
 			clusters: [],
 			dist: 0
 		}
+		this.steps = {
+			distsBest: [],
+			grossErrorLimit: 20,
+			grossErrorAmount: 0,
+			sumBestDists: 0
+		}
 	}
 	async start(scannerOutput) {
 		try {
-			const step1 = () => {
+			const step1 = () => { //k-Means algorithm for all input data
 				return new Promise((resolve, reject) => {
 					this.body.clusters = findKMeans(scannerOutput.distances, this.body.k); //Take clusters of k-Means
 					resolve();
 				})
 			}
-			const step2 = () => {
+			const step2 = () => { //Find the best cluster and make a clusters' length test (repeat if required)
 				return new Promise((resolve, reject) => {
 					this.body.clusters.sort((a, b) => { return b.length - a.length }); //Sort clusters by length (DESC)
 					if ((this.body.clusters[0].length - this.body.clusters[1].length) == 0
 						&& (this.body.k < scannerOutput.distances.length) ) { //Clusters've same length so need higher k
 						this.body.k++;
-						step1();
-						step2();
+						this.start(scannerOutput); //Repeat all functions
 					}
 					this.body.best = this.body.clusters[0];
-					//ToDo: OBLICZYĆ DYSTANSE POMIĘDZY BEST I W PRZYPADKU ZBYT DUŻEGO PROCENTA ODCHYŁKI K-MEANS DLA BEST OSTATECZNIE
-					let sumBestDists = 0;
+					resolve();
+				})
+			}
+			const step3 = () => { //Estimate distances between the best cluster's points and make a gross error test
+				return new Promise((resolve, reject) => {
+					this.body.best.sort((a, b) => { return b - a }); //Sort best cluster (DESC)
+					for (let i = 1; i < this.body.best.length; i++){ //Estimate distances between the best cluster's points
+						this.steps.distsBest.push(this.body.best[i - 1] - this.body.best[i]);
+					}
+					for (let i = 0; i < this.steps.distsBest.length; i++) { //Define gross error - if some distance is higher than CONST cm
+						if (this.steps.distsBest[i] > this.steps.grossErrorLimit) {//If some distance is too high
+							this.steps.grossErrorAmount++;
+						}
+					}
+					if (this.steps.grossErrorAmount > 0)
+						this.body.best = findKMeans(this.body.best, this.steps.grossErrorAmount).sort((a, b) => { return b.length - a.length })[0];
+					console.log('this.steps\n',this.steps)
+					resolve();
+				})
+			}
+			const step4 = () => { //Calculate sensor' output distance of the package (arithmetic average)
+				return new Promise((resolve, reject) => {
 					for (let i = 0; i < this.body.best.length; i++)
-						sumBestDists = sumBestDists + this.body.best[i];
-					this.body.dist = sumBestDists / this.body.best.length;
+						this.steps.sumBestDists = this.steps.sumBestDists + this.body.best[i];
+					this.body.dist = this.steps.sumBestDists / this.body.best.length;
 					resolve();
 				})
 			}
 			if (scannerOutput.sum > 0) {
-				await step1();
-				await step2();
+				await step1(); //k-Means algorithm for all input data
+				await step2(); //Find the best cluster and make a clusters' length test (repeat if required)
+				await step3(); //Estimate distances between the best cluster's points and make a gross error test
+				await step4(); //Calculate sensor' output distance of the package (arithmetic average)
 			};
 			this.body.data = scannerOutput.distances.sort((b, a) => { return b - a });  //Sort data points (ASC)
 		} catch (e) { '[Error] ' + console.log(e) }
