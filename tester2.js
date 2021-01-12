@@ -21,3 +21,5 @@ async function run() {
     await frontScannerKMeans.start(test)
     await console.log(frontScannerKMeans.return())
 } run();
+
+console.log('___________')
