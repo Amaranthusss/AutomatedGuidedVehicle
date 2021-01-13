@@ -1,6 +1,6 @@
 //Immediately-invoked Function Expression
 (() => {
-    require('events').EventEmitter.defaultMaxListeners = 1000;
+    require('events').EventEmitter.defaultMaxListeners = 10000;
 })()
 //
 //Pinouts
@@ -12,6 +12,7 @@
 
 
 //************Linking all files with the Main() function************
+/*
 //-------Configuration-------
 const Configuration = require("./config");
 const config = new Configuration();
@@ -27,6 +28,7 @@ const jsonCtrl = new JsonCtrl();
 //-------Expander I2C-------
 const ExpanderI2C = require("./expanderI2C");
 const expanderI2C = new ExpanderI2C();
+*/
 //-------Scanners-------
 var Scanners = require("./scanners");
 var frontScanner = Scanners.frontScanner;
@@ -66,12 +68,13 @@ process.on('SIGINT', function () { //on ctrl+c
 
 //Realizing AGV movements
 //var checkbraking = setInterval(checkBrakingInterval, 9);
+/*
 var checkDir_Up_Interval,
     checkDir_Down_Interval,
     checkDir_Left_Interval,
     checkDir_Right_Interval,
     checkDir_Time = 10; //Same config time has to be changed in learning.js/activeAutoPath/toDo
-
+*/
 function containsObject(obj, list) {
     try {
         for (var i = 0; i < list.length; i++) {
@@ -87,115 +90,125 @@ function containsObject(obj, list) {
 }
 
 
-//User control
-io.sockets.on('connection', function (socket) {
-    var pathName;
-    var pathsList = [];
-    jsonCtrl.readFromFile('agv/paths/pathsList.json');
-    setTimeout(loadPathsList, 100);
+setTimeout(() => {
+    //User control
+    io.sockets.on('connection', function (socket) {
+        var pathName;
+        var pathsList = [];
+        //jsonCtrl.readFromFile('agv/paths/pathsList.json');
+        //setTimeout(loadPathsList, 100);
 
-    function each100Milisec() {
-        //socket.emit("VELOCITY_" + move.getCurrentSpeed());
-        //frontScanner.update();
-        //console.log(frontScanner.printf());
-        socket.emit("PROXIMITY_" + frontScanner.output);
-        //console.log(frontScanner.output);
-        async function run() {
-            await frontScannerKMeans.start(test)
-            await console.log(frontScannerKMeans.return())
-        } run();
-        //console.log(frontScanner.output[frontScanner.output.length - 1].points);
-        //console.log(frontScanner.output);
-        //if (frontScanner.clear == true) 
-        //    frontScanner.invertClear;
-    }
-    var each100MilisecInterval = setInterval(each100Milisec, 1000);
+        function each125Milisec() {
+            
+            //console.log(frontScanner.output[frontScanner.output.length - 1].points);
+            //console.log(frontScanner.output);
+            //if (frontScanner.clear == true) 
+            //    frontScanner.invertClear;
+        }
+        var each125MilisecInterval = setInterval(each125Milisec, 125);
+        function each1000Milisec() {
+            async function run() {
+                //await frontScannerKMeans.start(frontScanner.output);
+                let out = [0,
+                    frontScanner.output.lowest,
+                    frontScanner.output.highest,
+                    frontScanner.output.angle.toFixed(2)
+                ]
+                //out[0] = (await frontScannerKMeans.return()).dist.toFixed(2);
+                out[0] = frontScanner.output.distances[0].toFixed(2);
+                socket.emit("PROXIMITY_" + out);
+            } run();
+            //socket.emit("VELOCITY_" + move.getCurrentSpeed());
+        }
+        var each1000MilisecInterval = setInterval(each1000Milisec, 2500);
+        
 
-    function loadPathsList() {
-        pathsList = jsonCtrl.getFilesData();
-        socket.emit("PATHNAMESLIST_" + pathsList);
-    }
+        function loadPathsList() {
+            pathsList = jsonCtrl.getFilesData();
+            socket.emit("PATHNAMESLIST_" + pathsList);
+        }
+        socket.onevent = function (packet) {
+            console.log("[Echo]" + packet.data);
+            var str = String(packet.data);
+            str = str.split("_");
+            if (str[0] == 'PATHNAME') {
+                pathName = str[1];
+            } else if (str[0] == 'HMI') {
+                if (str[1] == 'finishLearningMode') {
+                    learning.turnOffLearningMode('agv/paths/' + pathName + '.json');
+                    if (containsObject(pathName, pathsList) == false)
+                        pathsList.push(pathName);
+                    jsonCtrl.writeToFile('agv/paths/pathsList.json', JSON.stringify(pathsList));
+                    console.log("[PathsList]" + pathsList);
+                    socket.emit("PATHNAMESLIST_" + pathsList);
+                    config.setMode('manual');
+                } else if (str[1] == 'autoMode') {
 
-    socket.onevent = function (packet) {
-        console.log("[Echo]" + packet.data);
-        var str = String(packet.data);
-        str = str.split("_");
-        if (str[0] == 'PATHNAME') {
-            pathName = str[1];
-        } else if (str[0] == 'HMI') {
-            if (str[1] == 'finishLearningMode') {
-                learning.turnOffLearningMode('agv/paths/' + pathName + '.json');
-                if (containsObject(pathName, pathsList) == false)
-                    pathsList.push(pathName);
-                jsonCtrl.writeToFile('agv/paths/pathsList.json', JSON.stringify(pathsList));
-                console.log("[PathsList]" + pathsList);
-                socket.emit("PATHNAMESLIST_" + pathsList);
-                config.setMode('manual');
-            } else if (str[1] == 'autoMode') {
+                } else if (str[1] == 'startLearningMode') {
+                    config.setMode('learning');
+                } else if (str[1] == 'resumeAutoPath') {
+                    learning.resumeAutoPath('agv/paths/' + str[2] + '.json');
+                    config.setMode('auto');
+                } else if (str[1] == 'activePath') {
+                    learning.activeAutoPath('agv/paths/' + str[2] + '.json');
+                    config.setMode('auto');
+                } else if (str[1] == 'refreshPathNamesList') {
+                    socket.emit("PATHNAMESLIST_" + pathsList);
+                }
+            } else if (str[0] == 'CTRL') {
+                if (config.getMode() == 'manual' || config.getMode() == 'learning') {
+                    if (str[1] == 'forwardStart') {
 
-            } else if (str[1] == 'startLearningMode') {
-                config.setMode('learning');
-            } else if (str[1] == 'resumeAutoPath') {
-                learning.resumeAutoPath('agv/paths/' + str[2] + '.json');
-                config.setMode('auto');
-            } else if (str[1] == 'activePath') {
-                learning.activeAutoPath('agv/paths/' + str[2] + '.json');
-                config.setMode('auto');
-            } else if (str[1] == 'refreshPathNamesList') {
-                socket.emit("PATHNAMESLIST_" + pathsList);
-            }
-        } else if (str[0] == 'CTRL') {
-            if (config.getMode() == 'manual' || config.getMode() == 'learning') {
-                if (str[1] == 'forwardStart') {
-
-                    move.setForwardClicked(true);
-                    //checkDir_Up_Interval = setInterval(checkDirInterval, checkDir_Time);
-                    move.checkDir();
-                    learning.startTimerHMI('up');
-                } else if (str[1] == 'forwardStop') {
-                    move.setForwardClicked(false);
-                    //clearInterval(checkDir_Up_Interval);
-                    move.checkDir();
-                    move.forwardStop();
-                    learning.stopTimerHMI('up');
-                } else if (str[1] == 'backwardStart') {
-                    move.setBackwardClicked(true);
-                    //checkDir_Down_Interval = setInterval(checkDirInterval, checkDir_Time);
-                    move.checkDir();
-                    learning.startTimerHMI('down');
-                } else if (str[1] == 'backwardStop') {
-                    move.setBackwardClicked(false);
-                   //clearInterval(checkDir_Down_Interval);
-                    move.checkDir();
-                    move.forwardStop();
-                    learning.stopTimerHMI('down');
-                } else if (str[1] == 'turnLeftStart') {
-                    move.setLeftClicked(true);
-                    //checkDir_Left_Interval = setInterval(checkDirInterval, checkDir_Time);
-                    move.checkDir();
-                    learning.startTimerHMI('left');
-                } else if (str[1] == 'turnLeftStop') {
-                    move.setLeftClicked(false);
-                    //clearInterval(checkDir_Left_Interval);
-                    move.checkDir();
-                    move.forwardStop();
-                    learning.stopTimerHMI('left');
-                } else if (str[1] == 'turnRightStart') {
-                    move.setRightClicked(true);
-                    //checkDir_Right_Interval = setInterval(checkDirInterval, checkDir_Time);
-                    move.checkDir();
-                    learning.startTimerHMI('right');
-                } else if (str[1] == 'turnRightStop') {
-                    move.setRightClicked(false);
-                    //clearInterval(checkDir_Right_Interval);
-                    move.checkDir();
-                    move.forwardStop();
-                    learning.stopTimerHMI('right');
+                        move.setForwardClicked(true);
+                        //checkDir_Up_Interval = setInterval(checkDirInterval, checkDir_Time);
+                        move.checkDir();
+                        learning.startTimerHMI('up');
+                    } else if (str[1] == 'forwardStop') {
+                        move.setForwardClicked(false);
+                        //clearInterval(checkDir_Up_Interval);
+                        move.checkDir();
+                        move.forwardStop();
+                        learning.stopTimerHMI('up');
+                    } else if (str[1] == 'backwardStart') {
+                        move.setBackwardClicked(true);
+                        //checkDir_Down_Interval = setInterval(checkDirInterval, checkDir_Time);
+                        move.checkDir();
+                        learning.startTimerHMI('down');
+                    } else if (str[1] == 'backwardStop') {
+                        move.setBackwardClicked(false);
+                        //clearInterval(checkDir_Down_Interval);
+                        move.checkDir();
+                        move.forwardStop();
+                        learning.stopTimerHMI('down');
+                    } else if (str[1] == 'turnLeftStart') {
+                        move.setLeftClicked(true);
+                        //checkDir_Left_Interval = setInterval(checkDirInterval, checkDir_Time);
+                        move.checkDir();
+                        learning.startTimerHMI('left');
+                    } else if (str[1] == 'turnLeftStop') {
+                        move.setLeftClicked(false);
+                        //clearInterval(checkDir_Left_Interval);
+                        move.checkDir();
+                        move.forwardStop();
+                        learning.stopTimerHMI('left');
+                    } else if (str[1] == 'turnRightStart') {
+                        move.setRightClicked(true);
+                        //checkDir_Right_Interval = setInterval(checkDirInterval, checkDir_Time);
+                        move.checkDir();
+                        learning.startTimerHMI('right');
+                    } else if (str[1] == 'turnRightStop') {
+                        move.setRightClicked(false);
+                        //clearInterval(checkDir_Right_Interval);
+                        move.checkDir();
+                        move.forwardStop();
+                        learning.stopTimerHMI('right');
+                    }
                 }
             }
-        }
-    };
-});
+        };
+    });
+}, 2000);
+/*
 function checkBrakingInterval() {
     move.checkbrakingFC();
 
@@ -204,3 +217,4 @@ function checkDirInterval() {
     move.checkDir();
 }
 move.initialization();
+*/

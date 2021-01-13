@@ -5,10 +5,10 @@ const Gpio = require('pigpio').Gpio; //To control pins of ultrasonic sensors
 const MICROSECDONDS_PER_CM = 1e6 / 34321; //The number of microseconds it takes sound to travel 1cm at 20 degrees celcius
 var scannersProxInterval = null;
 const rotConfig = {
-    rotTime: 50, //rotation time for left&right sides
-    stopTime: 30, //time to get rest
-    stepsPerSide: 50, //limit of steps to change direction at motors
-    degPerStep: 0.1 //each step of motor takes 3 deg
+    rotTime: 2100, //rotation time for left&right sides
+    stopTime: 00, //time to get rest
+    stepsPerSide: 200, //limit of steps to change direction at motors
+    degPerStep: 0.3 //each step of motor takes 3 deg
 };
 
 function triggTrigger() { //ToDo: This fcn should be individual for Scanner's class obj
@@ -55,28 +55,14 @@ class Scanner {
     }
     //************ Proximity Sensor ************
     getDistPackage() {
-        //console.log('----------------------------------------->getDistPackage()')
-        //console.log(this.pinTrig, this.pinEcho)
-        
-        scannersProxInterval = setInterval(
-            triggTrigger,
-            1); //Time for each trigg
         this.pinTrig.digitalWrite(0); // Make sure trigger is low
         this.watchHCSR04();
+        scannersProxInterval = setInterval(
+            triggTrigger,
+            1000); //Time for each trigg
 
     }
     watchHCSR04() {
-        //console.log('----------------------------------------->watchHCSR04()');
-        /**
-         * Step 1: Filtr error measurements (out of sensor's limit)
-         * Step 2: Measure 100 times distance
-         * Step 3: Calculate differences between measurements (module)
-         * Step 4: Remove all measurements with oscylation more than 5 cm
-         * Step 5: Calculate average of all positive measurements
-         * Step 6: Clear all currentPackage, interval and integer
-         * 
-         * @param {USInt}   sensor_index    Range: 0 -> inf.
-         */
         let startTick;
         let i = 0;
         var currentPackage = [];
@@ -97,23 +83,8 @@ class Scanner {
                         this.currentHighest = currentPackage[i];
                     if (currentPackage[i] < this.currentLowest)
                         this.currentLowest = currentPackage[i];
-                    if (i >= 10) //Package has been measured
+                    if (i >= 2) //Package has been measured
                     {
-                        //var sum = 0;
-                        //var average = 0;
-                        //var diffAv = 0;
-                        //var n = 0; //Amount of true values
-                        //for (let j = 0; j < currentPackage.length; j++) {
-                        //if (j > 1) {
-                        //    diffAv = Math.sqrt(Math.pow(currentPackage[j] - currentPackage[j - 1], 2)); //Difference of distances
-                        //} else
-                        //    diffAv = 100;
-                        //if (diffAv <= 5) //5 cm is a max acceptable error
-                        //{
-                        //sum = sum + currentPackage[j];
-                        //n++;
-                        //}
-                        //}
                         currentPackage.splice(0, 1);
                         let sum = 0;
                         for (let j = 0; j < currentPackage.length; j++)

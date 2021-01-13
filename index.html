@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Load plotly.js into the DOM -->
@@ -7,10 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="https://www.w3schools.com/lib/w3color.js"></script>
 </head>
+
 <body>
     <div class="gnBody">
-        <div id='firstPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
-        <div id='secondPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
+        <div id='firstPlot'>
+            <!-- Plotly chart will be drawn inside this DIV -->
+        </div>
+        <div id='secondPlot'>
+            <!-- Plotly chart will be drawn inside this DIV -->
+        </div>
         <button class="menubttn" id="console">Mode: Manual Movements</button><br>
         <button class="menubttn" id="bttn1" onclick="finishLearningMode()">Finish learning mode</button>
         <button class="menubttn" id="bttn2" onclick="autoMode()">Scanners' data</button>
@@ -61,168 +67,36 @@
             document.getElementById("console").innerHTML = "auto mode actived, path is turned on";
         }
 
-        { //******************** DIAGRAMS ********************
-            //Configuration's data
-            const diagTimePeriod = 1000;
-            const scannersCoordinates = { fx: 0, fy: 25, bx: 0, by: -25 };
-            const diagramsInterval = setInterval(diagrams, diagTimePeriod);
-            //Plot Class
-            class Plot {
-                constructor(plot, trace, layout, echo, timeFcn, repLimit) {
-                    //inputs variables
-                    this.plot = plot;
-                    this.trace = trace;
-                    this.layout = layout;
-                    this.echo = echo;
-                    this.timeFcn = timeFcn;
-                    this.repLimit = repLimit;
-                    //inner variables
-                    this.data = [];
-                    this.iniTrace = trace;
-                    this.repLimitN = 0;
-                }
-
-                push(y, x) { //y is required; x is optional for timeFcn equal true
-                    if (this.echo[this.echo.length - 1].distances[this.echo[this.echo.length - 1].distances.length] == 0)
-                        this.repLimitN++;
-                    else
-                        this.repLimitN = 0;
-                    //Adding data
-                    if (this.repLimitN <= this.repLimit && this.echo[this.echo.length - 1].distances[this.echo.length - 1].dist != NaN) {
-                        //Add each point from echo at axis y
-                        for (let i = 0; i++ < this.echo[this.echo.length - 1].distances.length;)
-                            this.trace.y.push(y);
-                        //If this function is in domain of time, estimate axis x
-                        if (this.timeFcn == true) //This is function based at time t [ms]
-                        {
-                            this.trace.x.push(this.repLimitN);
-                            this.repLimitN = this.repLimitN + diagTimePeriod / 1000;
-                        }
-                        else //If it is not, just put x data to axis x
-                            this.trace.x.push(x);
-                    }
-                    this.data = [this.trace];
-                    Plotly.newPlot(this.plot, this.data, this.trace);
-                }
-
-                clear() {
-                    this.data = [];
-                    this.trace = this.iniTrace;
-                    Plotly.newPlot(this.plot, this.data, this.trace);
-                }
-
-                printf() {
-                    console.log(
-                        this.plot,
-                        this.trace,
-                        this.data
-                    );
-                }
+        //******************** DIAGRAMS ********************
+        //Configuration's data
+        const diagTimePeriod = 125;
+        const scannersCoordinates = { fx: 0, fy: 25, bx: 0, by: -25 };
+        //const diagramsInterval = setInterval(diagrams, diagTimePeriod);
+        const plotObj = {
+            name: 'firstPlot',
+            trace: {
+                x: [scannersCoordinates.fx, scannersCoordinates.bx],
+                y: [scannersCoordinates.fy, scannersCoordinates.by],
+                mode: 'markers',
+                name: 'Scatter'
+            },
+            layout: {
+                title: '____________ y = f(x) ____________'
             }
-            //Diagrams' objects
-            const proxTimePlot = new Plot(
-                'firstPlot', //Plot name
-                { //Trace
-                    type: 'scatter',
-                    x: [scannersCoordinates.fx, scannersCoordinates.bx],
-                    y: [scannersCoordinates.fy, scannersCoordinates.by],
-                    mode: 'markers',
-                    name: 'd = f(x)',
-                    marker: {
-                        color: 'rgba(156, 165, 196, 0.95)',
-                        line: {
-                            color: 'rgba(156, 165, 196, 1.0)',
-                            width: 1,
-                        },
-                        symbol: 'circle',
-                        size: 10
-                    }
-                },
-                { //Layout
-                    title: 'Dystans w dziedzinie czasu',
-                    yaxis2: {
-                        domain: [0.6, 0.95],
-                        anchor: 'd [cm]'
-                    },
-                    xaxis2: {
-                        domain: [0.6, 0.95],
-                        anchor: 't [s]'
-                    }
-                },
-                echoProx, //Echo
-                true, //Is that time function?
-                5 //Rep limit
-            );
-            const proxSpacePlot = new Plot(
-                'secondPlot', //Plot name
-                { //Trace
-                    type: 'scatter',
-                    x: [scannersCoordinates.fx, scannersCoordinates.bx],
-                    y: [scannersCoordinates.fy, scannersCoordinates.by],
-                    mode: 'markers',
-                    name: 'y = f(x)',
-                    marker: {
-                        color: 'rgba(156, 165, 196, 0.95)',
-                        line: {
-                            color: 'rgba(156, 165, 196, 1.0)',
-                            width: 1,
-                        },
-                        symbol: 'circle',
-                        size: 10
-                    }
-                },
-                { //Layout
-                    title: 'Dystans w uk³adzie przestrzennym',
-                    yaxis2: {
-                        domain: [0.6, 0.95],
-                        anchor: 'y [cm]'
-                    },
-                    xaxis2: {
-                        domain: [0.6, 0.95],
-                        anchor: 'x [cm]'
-                    }
-                },
-                echoProx, //Echo
-                false, //Is that time function?
-                1 //Rep limit
-            )
-            //Alltime data recived from echo [Socket.io]
-            var echoProx = [
-                {
-                    distances: [],
-                    lowest: 0,
-                    highest: 0,
-                    angle: 0
-                }
-            ];
-            //Events at interval's tick
-            function diagrams() {
-                //____________ d = f(t) ____________
-                proxTimePlot.push(echoProx.distances);
-                //____________ y = f(x) ____________
-                for (let i = 0; i++;
-                    i < echoProx[echoProx.length - 1] //ostatni echoProx
-                        .distances[
-                    echoProx[echoProx.length - 1].distances.length
-                    ]
-                ) {
-                    proxSpacePlot.push(
-                        //Estimate x point [x = X_s + d[n] * sin(a) * PI / 180]
-                        diagramsInterval.fx //scanner's offset at axis x
-                        + echoProx[echoProx.length - 1].distances[i] //last measured distance
-                        * Math.sin(echoProx[echoProx.length - 1].angle //angle at scanner's motor of measurement
-                            * Math.PI / 180), //recalculate degrees to radians
-                        //Estimate y point [y = Y_s + d[n] * cos(a) * PI / 180]
-                        diagramsInterval.fy //scanner's offset at axis y
-                        + echoProx[echoProx.length - 1].distances[i] //last measured distance
-                        * Math.cos(echoProx[echoProx.length - 1].angle //angle at scanner's motor of measurement
-                            * Math.PI / 180) //recalculate degrees to radians
-                    );
-                }
-                
-            }
-
         }
+        //function diagrams() {
+        //Plotly.newPlot(plotObj.name, [plotObj.trace], plotObj.layout);
+        //}
+        //Alltime data recived from echo [Socket.io]
+        var echoProx = [
+            {
+                distance: 0,
+                lowest: 0,
+                highest: 0,
+                angle: 0
+            }
+        ];
+
 
         var socket = io(); //load socket.io-client and connect to the host that serves the page
         window.addEventListener("load", function () { //when page loads
@@ -260,7 +134,6 @@
         document.onkeyup = checkKeyUp;
         document.addEventListener('keydown', checkKeyDown);
 
-
         socket.onevent = function (packet) {
             var str = String(packet.data);
             str = str.split("_");
@@ -276,10 +149,34 @@
                 echoData = str[1];
             } else if (str[0] == 'PROXIMITY') {
                 if (str[1] != 'undefined') {
-                    //proxTimePlot.echo.push(str[1]);
-                    proxSpacePlot.echo.push(str[1]);
-                    //proxTimePlot.printf();
-                    proxSpacePlot.printf();
+                    //console.log('str[1]\n',str[1]);
+                    let arr = [];
+                    arr = str[1].split(",");
+                    echoProx.push({
+                        distance: arr[0],
+                        lowest: arr[1],
+                        highest: arr[2],
+                        angle: arr[3]
+                    });
+                    //if (arr[0] < 120) {
+                    plotObj.trace.x.push(
+                        //Estimate x point [x = X_s + d[n] * sin(a) * PI / 180]
+                        scannersCoordinates.fx //scanner's offset at axis x
+                        + echoProx[echoProx.length - 1].distance //last measured distance
+                        * Math.sin(echoProx[echoProx.length - 1].angle //angle at scanner's motor of measurement
+                            * Math.PI / 180), //recalculate degrees to radians
+                    )
+                    plotObj.trace.y.push(
+                        //Estimate y point [y = Y_s + d[n] * cos(a) * PI / 180]
+                        scannersCoordinates.fy //scanner's offset at axis y
+                        + echoProx[echoProx.length - 1].distance //last measured distance
+                        * Math.cos(echoProx[echoProx.length - 1].angle //angle at scanner's motor of measurement
+                            * Math.PI / 180) //recalculate degrees to radians
+                    )
+
+                    Plotly.newPlot(plotObj.name, [plotObj.trace], plotObj.layout);
+                    //}
+                    console.log(arr[0], arr[3])
                 }
             }
         };
@@ -449,4 +346,5 @@
 
 
 </body>
+
 </html>
