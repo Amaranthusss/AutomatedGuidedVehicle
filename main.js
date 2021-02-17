@@ -31,16 +31,23 @@ const expanderI2C = new ExpanderI2C();
 */
 //-------Scanners-------
 var Scanners = require("./scanners");
-var frontScanner = Scanners.frontScanner;
+var rearScanner = Scanners.rearScanner;
 //-------k-Means Algorithm-------
 const KMeans = require("./kmeans");
-const frontScannerKMeans = KMeans.frontScanner;
 //-------Sensors Controller-------
 const SensorsController = require("./sensors");
 const sensorsController = new SensorsController();
 //-------Diagnosis-------
 const Diagnosis = require("./diag");
 const diag = new Diagnosis();
+
+rearScanner.ini();
+function each125Milisec() {
+    rearScanner.getDistPackage();
+    console.log(rearScanner.output.distances);
+}
+var each125MilisecInterval = setInterval(each125Milisec, 100);
+
 
 diag.refreshData();
 diag.ctrPanel();
@@ -98,14 +105,7 @@ setTimeout(() => {
         //jsonCtrl.readFromFile('agv/paths/pathsList.json');
         //setTimeout(loadPathsList, 100);
 
-        function each125Milisec() {
-            
-            //console.log(frontScanner.output[frontScanner.output.length - 1].points);
-            //console.log(frontScanner.output);
-            //if (frontScanner.clear == true) 
-            //    frontScanner.invertClear;
-        }
-        var each125MilisecInterval = setInterval(each125Milisec, 125);
+        
         function each1000Milisec() {
             async function run() {
                 //await frontScannerKMeans.start(frontScanner.output);
@@ -120,7 +120,7 @@ setTimeout(() => {
             } run();
             //socket.emit("VELOCITY_" + move.getCurrentSpeed());
         }
-        var each1000MilisecInterval = setInterval(each1000Milisec, 2500);
+        //var each1000MilisecInterval = setInterval(each1000Milisec, 2500);
         
 
         function loadPathsList() {

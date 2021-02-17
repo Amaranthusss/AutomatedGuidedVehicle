@@ -4,5 +4,8 @@
   "description": "AutomatedGuidedVehicle",
   "author": {
     "name": ""
+  },
+  "dependencies": {
+    "plotly-notebook-js": "^0.1.2"
   }
 }

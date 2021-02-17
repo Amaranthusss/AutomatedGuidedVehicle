@@ -57,7 +57,7 @@ const findKMeans = (arrayToProcess, Clusters) => {
 	return Groups;
 }
 
-class KMeans {
+module.exports = class KMeans {
 	constructor() {
 		this.body = {
 			data: [],
@@ -100,16 +100,16 @@ class KMeans {
 			}
 			const step1 = () => { //k-Means algorithm for all input data
 				return new Promise((resolve, reject) => {
-					this.body.clusters = findKMeans(scannerOutput.distances, this.body.k); //Take clusters of k-Means
+					this.body.clusters = findKMeans(scannerOutput.data, this.body.k); //Take clusters of k-Means
 					resolve();
 				})
 			}
 			const step2 = () => { //Find the best cluster and make a clusters' length test (repeat if required)
 				return new Promise((resolve, reject) => {
 					this.body.clusters.sort((a, b) => { return b.length - a.length }); //Sort clusters by length (DESC)
-					if (this.nextK < (scannerOutput.distances.length - 1)) {
+					if (this.nextK < (scannerOutput.data.length - 1)) {
 						if ((this.body.clusters[0].length - this.body.clusters[1].length) == 0
-							&& (this.body.k < scannerOutput.distances.length)) { //Clusters've same length so need higher k
+							&& (this.body.k < scannerOutput.data.length)) { //Clusters've same length so need higher k
 							this.steps.skipSteps = true;
 							this.nextK++;
 						} else
@@ -148,7 +148,7 @@ class KMeans {
 			}
 			const step5 = () => { //Sort data points (ASC)
 				return new Promise((resolve, reject) => {
-					this.body.data = scannerOutput.distances.sort((b, a) => { return b - a });
+					this.body.data = scannerOutput.data.sort((b, a) => { return b - a });
 					resolve();
 				})
 			}
@@ -169,7 +169,7 @@ class KMeans {
 					resolve();
 				})
 			}
-			if (scannerOutput.sum > 0) {
+			if (scannerOutput.data.length > 0) {
 				await step0(); //Variables initialization
 				await step1(); //k-Means algorithm for all input data
 				await step2(); //Find the best cluster and make a clusters' length test (repeat if required)
@@ -179,24 +179,9 @@ class KMeans {
 					await step5(); //Sort data points (ASC)
 					//await step6(); //Console.log
 				} else
-					this.start(scannerOutput); //Repeat all functions
+					await this.start(scannerOutput); //Repeat all functions
 
 			};
 		} catch (e) { '[Error] ' + console.log(e) }
 	}
-	async return() {
-		let out = {
-			grossErrorK: this.steps.grossErrorK,
-			distsBest: this.steps.distsBest,
-			data: this.body.data,
-			clusters: this.body.clusters,
-			bestBeforeGrossError: this.steps.beforeGrossError,
-			best: this.body.best,
-			dist: this.body.dist,
-			nextK: this.nextK
-		}
-		return out;
-	}
 }
-var frontScannerKMeans = new KMeans();
-module.exports.frontScanner = frontScannerKMeans;

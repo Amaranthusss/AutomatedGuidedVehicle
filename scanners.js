@@ -12,18 +12,19 @@ const rotConfig = {
 };
 
 function triggTrigger() { //ToDo: This fcn should be individual for Scanner's class obj
-    frontScanner.pinTrig.trigger(10, 1);
+    rearScanner.pinTrig.trigger(10, 1);
 }
 
 //-------Arduino Mega-------
 const board = require("./arduino");
+const Pinout = require("./pinout");
 //-------JSON Control-------
 const JsonCtrl = require("./jsonCtrl");
 const jsonCtrl = new JsonCtrl();
 //ToDo: Save actual position of scanner to file but there still isn't feedback about current scanner's position
 
 class Scanner {
-    constructor(name, id, pinA, pinB, pinC, pinD, trigger, echo) {
+    constructor(name, id, pinout) {
         //Scanner construct
         this.name = name;
         this.id = id;
@@ -37,29 +38,29 @@ class Scanner {
             }
         ;
         //Motor
-        this.pinA = pinA;
-        this.pinB = pinB;
-        this.pinC = pinC;
-        this.pinD = pinD;
+        this.A = pinout.A;
+        this.B = pinout.B;
+        this.C = pinout.C;
+        this.D = pinout.D;
         this.mtBit = 0;
         this.mtStep = 0;
         this.mtDir = true;
         //Ultrasonic Sensor
-        this.pinTrig = new Gpio(trigger, { mode: Gpio.OUTPUT });
-        this.pinEcho = new Gpio(echo, { mode: Gpio.INPUT, alert: true });
+        this.pinTrig = new Gpio(pinout.TRIG, { mode: Gpio.OUTPUT });
+        this.pinEcho = new Gpio(pinout.ECHO, { mode: Gpio.INPUT, alert: true });
         //Processing variables
         this.clear = false;
         this.obstacleStatus = true;
         this.currentLowest = 0;
         this.currentHighest = 500;
     }
+    ini () {
+        this.watchHCSR04();
+        this.pinTrig.digitalWrite(0); // Make sure trigger is low
+    }
     //************ Proximity Sensor ************
     getDistPackage() {
-        this.pinTrig.digitalWrite(0); // Make sure trigger is low
-        this.watchHCSR04();
-        scannersProxInterval = setInterval(
-            triggTrigger,
-            1000); //Time for each trigg
+        rearScanner.pinTrig.trigger(10, 1);
 
     }
     watchHCSR04() {
@@ -75,7 +76,7 @@ class Scanner {
                 const endTick = tick;
                 const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
                 let currentValue = Math.floor(diff / 2 / MICROSECDONDS_PER_CM);
-                if (currentValue < 250) //Filtr errors, 250 cm is sensor's max range
+                if (currentValue < 300 && currentValue > 5) //Filtr errors, 250 cm is sensor's max range
                 {
                     i++;
                     currentPackage[i] = currentValue;
@@ -83,7 +84,7 @@ class Scanner {
                         this.currentHighest = currentPackage[i];
                     if (currentPackage[i] < this.currentLowest)
                         this.currentLowest = currentPackage[i];
-                    if (i >= 2) //Package has been measured
+                    if (i >= 1) //Package has been measured
                     {
                         currentPackage.splice(0, 1);
                         let sum = 0;
@@ -114,55 +115,55 @@ class Scanner {
         if (this.mtDir) {
             switch (this.mtBit) {
                 case 0:
-                    board.digitalWrite(this.pinA, 1);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 1);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 0);
                     break;
                 case 1:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 1);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 1);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 0);
                     break;
                 case 2:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 1);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 1);
+                    board.digitalWrite(this.D, 0);
                     break;
                 case 3:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 1);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 1);
                     break;
             }
         } else {
             switch (this.mtBit) {
                 case 0:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 1);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 1);
                     break;
                 case 1:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 1);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 1);
+                    board.digitalWrite(this.D, 0);
                     break;
                 case 2:
-                    board.digitalWrite(this.pinA, 0);
-                    board.digitalWrite(this.pinB, 1);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 0);
+                    board.digitalWrite(this.B, 1);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 0);
                     break;
                 case 3:
-                    board.digitalWrite(this.pinA, 1);
-                    board.digitalWrite(this.pinB, 0);
-                    board.digitalWrite(this.pinC, 0);
-                    board.digitalWrite(this.pinD, 0);
+                    board.digitalWrite(this.A, 1);
+                    board.digitalWrite(this.B, 0);
+                    board.digitalWrite(this.C, 0);
+                    board.digitalWrite(this.D, 0);
                     break;
             }
         }
@@ -173,7 +174,7 @@ class Scanner {
         this.mtBit++;
         if (this.mtBit > 3)
             this.mtBit = 0;
-        //console.log(this.pinA + ' , ' + this.pinB + ' , ' + this.pinC + ' , ' + this.pinD);
+        //console.log(this.A + ' , ' + this.B + ' , ' + this.C + ' , ' + this.D);
         //console.log(this.mtBit + ' , ' + this.mtStep + ' , ' + this.mtDir);
     }
     //************ Public methods ************
@@ -206,8 +207,7 @@ class Scanner {
 
 
 
-var frontScanner = new Scanner('frontScanner', 0, 52, 50, 48, 46, 15, 14);
-var test = 4;
+var rearScanner = new Scanner('rearScanner', 0, Pinout.ultraSonicSensorRear);
 
 //************Arduino Board has been detected************
 board.on("ready", function () {
@@ -215,28 +215,27 @@ board.on("ready", function () {
     //------- Pinout: Modes ------- 
     //http://johnny-five.io/api/board/
     //0:DI; 1:DO; 2:AI; 3:PWM; 4:servo
-    this.pinMode(frontScanner.pinA, 1);
-    this.pinMode(frontScanner.pinB, 1);
-    this.pinMode(frontScanner.pinC, 1);
-    this.pinMode(frontScanner.pinD, 1);
+    this.pinMode(rearScanner.A, 1);
+    this.pinMode(rearScanner.B, 1);
+    this.pinMode(rearScanner.C, 1);
+    this.pinMode(rearScanner.D, 1);
     //------- Pinout: Default values -------
-    this.digitalWrite(frontScanner.pinA, 0);
-    this.digitalWrite(frontScanner.pinB, 0);
-    this.digitalWrite(frontScanner.pinC, 0);
-    this.digitalWrite(frontScanner.pinD, 0);
+    this.digitalWrite(rearScanner.A, 0);
+    this.digitalWrite(rearScanner.B, 0);
+    this.digitalWrite(rearScanner.C, 0);
+    this.digitalWrite(rearScanner.D, 0);
     //------- Interval: Rotate motors -------
     var rotateScannersInterval = setInterval(
         achiveNextStep,
         rotConfig.rotTime + rotConfig.stopTime);
 
     function achiveNextStep() {
-        frontScanner.rotateScanner()
-        frontScanner.getDistPackage();
+        rearScanner.rotateScanner()
+        rearScanner.getDistPackage();
     }
 });
 
 
 
 
-module.exports.frontScanner = frontScanner;
-module.exports.test = test;
+module.exports.rearScanner = rearScanner;
