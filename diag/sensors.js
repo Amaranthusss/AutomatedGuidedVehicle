@@ -2,7 +2,7 @@ const internal = {};
 
 
 //-------Johnny Five-------
-const JohnnyFive = require("./expanderI2C");
+const JohnnyFive = require("../ctrlPanel/expanderI2C");
 const johnnyFive = new JohnnyFive();
 //-------Proximity Sensors------- ToDo: add scanners to safety
 //const ProximitySensors = require("./proximity");

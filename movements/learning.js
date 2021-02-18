@@ -6,14 +6,14 @@ const fs = require('fs');
 const Configuration = require("./config");
 const config = new Configuration();
 //-------Movements-------
-const Movements = require("./movements");
+const Movements = require("../movements");
 const move = new Movements();
 var autoModeNodes = [];
 //-------JSON Control-------
 const JsonCtrl = require("./jsonCtrl");
 const jsonCtrl = new JsonCtrl();
 //-------Sensors Controller-------
-const SensorsController = require("./sensors");
+const SensorsController = require("../diag/sensors");
 const sensorsController = new SensorsController();
 
 

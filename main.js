@@ -30,15 +30,13 @@ const ExpanderI2C = require("./expanderI2C");
 const expanderI2C = new ExpanderI2C();
 */
 //-------Scanners-------
-var Scanners = require("./scanners");
-var rearScanner = Scanners.rearScanner;
 //-------k-Means Algorithm-------
-const KMeans = require("./kmeans");
+const KMeans = require("/scanners/kmeans");
 //-------Sensors Controller-------
-const SensorsController = require("./sensors");
+const SensorsController = require("./diag/sensors");
 const sensorsController = new SensorsController();
 //-------Diagnosis-------
-const Diagnosis = require("./diag");
+const Diagnosis = require("/diag/diag");
 const diag = new Diagnosis();
 
 rearScanner.ini();

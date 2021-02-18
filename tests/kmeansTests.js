@@ -1,6 +1,6 @@
 
 //-------k-Means Algorithm-------
-const KMeans = require("./kmeans");
+const KMeans = require("../scanners/kmeans");
 const frontScannerKMeans = KMeans.frontScanner;
 
 //Vector simulation

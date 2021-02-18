@@ -1,4 +1,4 @@
-const Pinout = require("./pinout")
+const Pinout = require("../config/pinout")
 const Gpio = require('pigpio').Gpio
 const KMeans = require('./kmeans')
 

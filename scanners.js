@@ -17,9 +17,9 @@ function triggTrigger() { //ToDo: This fcn should be individual for Scanner's cl
 
 //-------Arduino Mega-------
 const board = require("./arduino");
-const Pinout = require("./pinout");
+const Pinout = require("./config/pinout");
 //-------JSON Control-------
-const JsonCtrl = require("./jsonCtrl");
+const JsonCtrl = require("./json/jsonCtrl");
 const jsonCtrl = new JsonCtrl();
 //ToDo: Save actual position of scanner to file but there still isn't feedback about current scanner's position
 
