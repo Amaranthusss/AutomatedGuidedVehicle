@@ -6,7 +6,7 @@ board = new five.Board({ port: "/dev/ttyACM0" });
 board.on("ready", function () {
     console.log("[ARDUNIO] Here we go!");
     scanners = require('./scanners/scanners')
-    setTimeout(() => { console.log(scanners.rearScanner.output) }, 5000);
+    setTimeout(() => { scanners.rearScanner.start(); console.log('Scanner has been started') }, 31000);
 });
 
 module.exports = board;

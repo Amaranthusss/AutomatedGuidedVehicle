@@ -20,17 +20,25 @@ class Scanner {
             angle: 0,
             average: null
         }
-        this._initialization()
+        this.interval = null
         this.kMeans = new KMeans()
         this.motor = new Motor(this.hardware.pinout)
-        this.angle = 0
+        this._initialization()
+        this.angle = {
+            value: -config.MAX_ANGLE - 1,
+            ini: false
+        }
         this.output = []
     }
-    _initialization() {
-        this._hello()
-        this.hardware.trig.digitalWrite(0)
+    async _initialization() {
+        this._hello() //Inform terminal about initialization
+        this.hardware.trig.digitalWrite(0) //Prepare trigger pin
+        this.motor.home() //Get lowest possible angle at motor
+    }
+    start() { 
+        this.interval = setInterval(() => { this._getSingle() }, config.TRIG_PAUSE)
+        //Turn on sensor's detection
         let startTick
-
         this.hardware.echo.on('alert', (level, tick) => {
             if (level == 1) {
                 startTick = tick
@@ -41,7 +49,8 @@ class Scanner {
             }
         });
     }
-    _hello() { console.log('[', this.name, ':', this.id, ']', this.hardware.pinout) }
+    stop() { clearInterval(this.interval) }
+    _hello() { console.log(this._getName(), this.hardware.pinout) }
     async _append(value) {
         if (value > 5 && value <= config.SENSOR_MAX_RANGE)
             this.current.data.push(value)
@@ -52,24 +61,27 @@ class Scanner {
         this.current.highest = Math.max(...this.current.data)
         this.current.lowest = Math.min(...this.current.data)
         this.current.average = Math.round(this.current.data.reduce((a, b) => a + b, 0) / this.current.data.length)
-        if (this.angle >= 0 && this.angle < config.MAX_ANGLE)
-            this.angle++
-        else if (this.angle >= -config.MAX_ANGLE && this.angle < 0)
-            this.angle--
-        if (this.angle == (config.MAX_ANGLE - 1) || this.angle == -config.MAX_ANGLE)
-            this.motor.changeDir()
+        if (await this.motor.getDir() == false && this.angle.value != config.MAX_ANGLE)
+            this.angle.value++
+        else
+            this.angle.value--
+        if (this.angle.ini == true)
+            if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE)
+                this.motor.changeDir()
+        this.angle.ini = true
     }
-    async _getSingle() { this.hardware.trig.trigger(10, 1) }
+    async _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }
     async _clearData() {
         this.current.data = []
         this.current.highest = 0
         this.current.lowest = config.SENSOR_MAX_RANGE
     }
+    _getName() { return '[' + this.name + ':' + this.id + ']' }
     /** Sets min, max & average values; Starts K-Means algorithm for current data; Sets output distance data; Clear data buffer */
     async _isolate() {
         await this._analzye()
         await this.kMeans.start(this.current)
-        console.log(Math.round(this.kMeans.body.dist), this.angle)
+        console.log({dist: Math.round(this.kMeans.body.dist), angle: this.angle.value})
         this.output.push(Math.round(this.kMeans.body.dist))
         await this.motor.rotateScanner()
         //await this.printDebbug()
@@ -82,13 +94,12 @@ class Scanner {
 
 Scanner.ids = 1
 rearScanner = new Scanner('Rear', pinout.ultraSonicSensorRear)
-frontScanner = new Scanner('Front', pinout.ultraSonicSensorFront)
-setInterval(() => {
-    rearScanner._getSingle()
-    //frontScanner._getSingle()
-}, config.TRIG_PAUSE);
+//frontScanner = new Scanner('Front', pinout.ultraSonicSensorFront)
+
+
+
 
 module.exports = {
     rearScanner: rearScanner,
-    frontScanner: frontScanner
+    //frontScanner: frontScanner
 }

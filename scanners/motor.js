@@ -49,8 +49,32 @@ module.exports = class Motor {
                 }
             }, config.MOTOR_STEPS_PAUSE)
     }
+    async home() {
+        let interval = setInterval(() => {
+            this.rotate.dir = true
+            this.rotateScanner()
+        }, config.MOTOR_STEPS_PAUSE * config.PULSES_PER_ANGLE * 4 + 1)
+        setTimeout(() => {
+            clearInterval(interval)
+            clearInterval(this.interval)
+            setTimeout(() => {
+                this._homeClear()
+                console.log("MESSAGE: Home position should be reached.")
+            }, 300)
+        }, config.TIME_TO_ACHIVE_HOME)
+
+    }
+    async _homeClear() {
+        clearInterval(this.interval)
+        this.rotate.i = 0
+        this.rotate.dir = false
+        this.repeater = 0
+    }
     async changeDir() {
         this.rotate.dir = this.rotate.dir != true
+    }
+    async getDir() {
+        return this.rotate.dir
     }
 
 }
