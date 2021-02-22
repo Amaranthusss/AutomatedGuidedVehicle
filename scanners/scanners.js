@@ -1,8 +1,9 @@
-const pinout = require('../config/pinout')
+const pinout = require('../config/pinout').scanners
 const Gpio = require('pigpio').Gpio
 const KMeans = require('./kmeans')
 const Motor = require('./motor')
 const config = require('../config/config').SCANNERS
+const diag = require('../diag/bodyDiag')
 
 class Scanner {
     constructor(name, pinout) {
@@ -23,19 +24,18 @@ class Scanner {
         this.interval = null
         this.kMeans = new KMeans()
         this.motor = new Motor(this.hardware.pinout)
-        this._initialization()
+        diag.hello(this)
+        this.hardware.trig.digitalWrite(0) //Prepare trigger pin
+        this.motor._home() //Get lowest possible angle at motor
         this.angle = {
             value: -config.MAX_ANGLE - 1,
             ini: false
         }
         this.output = []
+        this.commitFlag = false
     }
-    async _initialization() {
-        this._hello() //Inform terminal about initialization
-        this.hardware.trig.digitalWrite(0) //Prepare trigger pin
-        this.motor.home() //Get lowest possible angle at motor
-    }
-    start() { 
+    /** Starts measurement based at ultrasonic sensor. */
+    start() {
         this.interval = setInterval(() => { this._getSingle() }, config.TRIG_PAUSE)
         //Turn on sensor's detection
         let startTick
@@ -49,53 +49,62 @@ class Scanner {
             }
         });
     }
+    /** Stops sending ultrasonic sounds from sensor. */
     stop() { clearInterval(this.interval) }
-    _hello() { console.log(this._getName(), this.hardware.pinout) }
-    async _append(value) {
+    _append(value) {
         if (value > 5 && value <= config.SENSOR_MAX_RANGE)
             this.current.data.push(value)
         if (this.current.data.length >= config.PACKAGE_SIZE)
             this._isolate()
     }
-    async _analzye() {
+    _analzye() {
         this.current.highest = Math.max(...this.current.data)
         this.current.lowest = Math.min(...this.current.data)
         this.current.average = Math.round(this.current.data.reduce((a, b) => a + b, 0) / this.current.data.length)
-        if (await this.motor.getDir() == false && this.angle.value != config.MAX_ANGLE)
+        if (this.motor.getDir() == false && this.angle.value != config.MAX_ANGLE)
             this.angle.value++
         else
             this.angle.value--
         if (this.angle.ini == true)
             if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE)
-                this.motor.changeDir()
+                this.motor._changeDir()
         this.angle.ini = true
     }
-    async _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }
-    async _clearData() {
+    _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }
+    _clearData() {
         this.current.data = []
         this.current.highest = 0
         this.current.lowest = config.SENSOR_MAX_RANGE
     }
-    _getName() { return '[' + this.name + ':' + this.id + ']' }
-    /** Sets min, max & average values; Starts K-Means algorithm for current data; Sets output distance data; Clear data buffer */
     async _isolate() {
-        await this._analzye()
-        await this.kMeans.start(this.current)
-        console.log({dist: Math.round(this.kMeans.body.dist), angle: this.angle.value})
-        this.output.push(Math.round(this.kMeans.body.dist))
-        await this.motor.rotateScanner()
-        //await this.printDebbug()
-        await this._clearData()
+        try {
+            await this._analzye()
+            await this.kMeans.start(this.current)
+            //console.log({ dist: Math.round(this.kMeans.body.dist), angle: this.angle.value })
+            this.output.push(
+                {
+                    dist: Math.round(this.kMeans.body.dist),
+                    angle: this.angle.value
+                }
+            )
+            await this.motor._rotateScanner()
+            //await this.printDebbug()
+            await this._clearData()
+            this.commitFlag = true
+        } catch (error) {
+            diag.message(this, '_isolate() error: ' + error.message)
+        }
     }
-    async printDebbug() { console.log('\n[', this.name, ':', this.id, ']\n', this.current, '\n', await this.kMeans.return()) }
-    printf() { console.log('[', this.name, ':', this.id, ']', this.output) }
+    /** Prints all variables used at scanner class. */
+    printDebbug() { console.log('\n[', this.name, ':', this.id, ']\n', this.current, '\n', this.kMeans.return()) }
+    /** Prints scanner's output structure. */
+    printf() { diag.hello(this, true) }
 
 }
 
 Scanner.ids = 1
 rearScanner = new Scanner('Rear', pinout.ultraSonicSensorRear)
 //frontScanner = new Scanner('Front', pinout.ultraSonicSensorFront)
-
 
 
 

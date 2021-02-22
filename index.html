@@ -149,16 +149,14 @@
                 echoData = str[1];
             } else if (str[0] == 'PROXIMITY') {
                 if (str[1] != 'undefined') {
-                    //console.log('str[1]\n',str[1]);
-                    let arr = [];
-                    arr = str[1].split(",");
+                    //console.log(str[1])
+                    let arr = JSON.parse(str[1])
                     echoProx.push({
-                        distance: arr[0],
-                        lowest: arr[1],
-                        highest: arr[2],
-                        angle: arr[3]
+                        distance: arr.dist,
+                        lowest: 0,
+                        highest: 0,
+                        angle: arr.angle
                     });
-                    //if (arr[0] < 120) {
                     plotObj.trace.x.push(
                         //Estimate x point [x = X_s + d[n] * sin(a) * PI / 180]
                         scannersCoordinates.fx //scanner's offset at axis x
@@ -173,10 +171,7 @@
                         * Math.cos(echoProx[echoProx.length - 1].angle //angle at scanner's motor of measurement
                             * Math.PI / 180) //recalculate degrees to radians
                     )
-
                     Plotly.newPlot(plotObj.name, [plotObj.trace], plotObj.layout);
-                    //}
-                    console.log(arr[0], arr[3])
                 }
             }
         };

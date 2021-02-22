@@ -1,5 +1,7 @@
 const config = require('../config/config').SCANNERS
-const arduino = require('../arduino')
+const arduino = require('../arduino').arduino
+const scanners = require('./scanners')
+const diag = require('../diag/bodyDiag')
 
 module.exports = class Motor {
     constructor(pinout) {
@@ -23,57 +25,60 @@ module.exports = class Motor {
             pinout.D
         ]
     }
-    async rotateScanner() {
-        this.interval = setInterval(
-            () => {
-                this.rotate.sr.fill(0)
-                this.rotate.sr[this.rotate.i] = 1
-                if (this.rotate.dir == false) {
-                    if (this.rotate.i < 3)
-                        this.rotate.i++
-                    else
-                        this.rotate.i = 0
-                }
-                else {
-                    if (this.rotate.i > 0)
-                        this.rotate.i--
-                    else
-                        this.rotate.i = 3
-                }
-                for (let i = 0; i < 4; i++)
-                    arduino.digitalWrite(this.pinout[i], this.rotate.sr[i])
-                this.repeater++
-                if (this.repeater >= config.PULSES_PER_ANGLE) {
-                    this.repeater = 0
-                    clearInterval(this.interval)
-                }
-            }, config.MOTOR_STEPS_PAUSE)
+    _rotateScanner() {
+        return new Promise((resolve, reject) => {
+            this.interval = setInterval(
+                () => {
+                    this.rotate.sr.fill(0)
+                    this.rotate.sr[this.rotate.i] = 1
+                    if (this.rotate.dir == false) {
+                        if (this.rotate.i < 3)
+                            this.rotate.i++
+                        else
+                            this.rotate.i = 0
+                    }
+                    else {
+                        if (this.rotate.i > 0)
+                            this.rotate.i--
+                        else
+                            this.rotate.i = 3
+                    }
+                    for (let i = 0; i < 4; i++)
+                        arduino.digitalWrite(this.pinout[i], this.rotate.sr[i])
+                    this.repeater++
+                    if (this.repeater >= config.PULSES_PER_ANGLE) {
+                        this.repeater = 0
+                        clearInterval(this.interval)
+                    }
+                }, config.MOTOR_STEPS_PAUSE)
+            resolve()
+        })
+
     }
-    async home() {
+    /** Rotates motor of scanner to minimal angle position - home position. */
+    _home() {
+        var sr = [0, 0, 0, 0]
+        var indicator = 3
         let interval = setInterval(() => {
-            this.rotate.dir = true
-            this.rotateScanner()
-        }, config.MOTOR_STEPS_PAUSE * config.PULSES_PER_ANGLE * 4 + 1)
+            sr.fill(0)
+            sr[indicator] = 1
+            for (let i = 0; i < 4; i++)
+                arduino.digitalWrite(this.pinout[i], sr[i])
+            if (indicator > 0)
+                indicator--
+            else
+                indicator = 3
+        }, config.MOTOR_STEPS_PAUSE)
         setTimeout(() => {
             clearInterval(interval)
-            clearInterval(this.interval)
-            setTimeout(() => {
-                this._homeClear()
-                console.log("MESSAGE: Home position should be reached.")
-            }, 300)
         }, config.TIME_TO_ACHIVE_HOME)
 
     }
-    async _homeClear() {
-        clearInterval(this.interval)
-        this.rotate.i = 0
-        this.rotate.dir = false
-        this.repeater = 0
-    }
-    async changeDir() {
+    _changeDir() {
         this.rotate.dir = this.rotate.dir != true
     }
-    async getDir() {
+    /** Returns current direction of scanner's motor. */
+    getDir() {
         return this.rotate.dir
     }
 
