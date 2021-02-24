@@ -52,7 +52,7 @@ class Scanner {
     /** Stops sending ultrasonic sounds from sensor. */
     stop() { clearInterval(this.interval) }
     _append(value) {
-        if (value > 5 && value <= config.SENSOR_MAX_RANGE)
+        if (value > config.SENSOR_MIN_RANGE && value <= config.SENSOR_MAX_RANGE)
             this.current.data.push(value)
         if (this.current.data.length >= config.PACKAGE_SIZE)
             this._isolate()

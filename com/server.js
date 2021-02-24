@@ -1,26 +1,21 @@
-//Human-Machine Interface (server)
-var http = require('http').createServer(handler); //require http server, and create server with function handler()
-var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
-var fs = require('fs'); //require filesystem module
-http.listen(8080); //nasłuchuj port 8080
-function handler(req, res) { //what to do on requests to port 8080
-    fs.readFile(__dirname.replace('/com','') + '/index.html', function (err, data) { //read file index.html in public folder
-        if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/html' }); //display 404 on error
-            return res.end("404 Not Found");
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html' }); //write HTML
-        res.write(data); //write data from rgb.html
-        return res.end();
-    });
-}
+//___________ Libraries ___________
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const path = require('path')
+//___________ Configuration ___________
+const PORT = process.env.PORT || 8080
+const PATH = __dirname + '/views'
+app.set('views', PATH);
+app.set('view engine', 'hbs')
+app.use(express.static(path.join(__dirname, 'public')));
+//___________ My files ___________
+const routes = require('./routes/index')
+//___________ Parsers ___________
+app.use(bodyParser.json())
+app.use(bodyParser.raw());
+app.use(bodyParser.urlencoded({ extended: true }));
+//___________ Routes ___________
+app.use('/', routes)
 
-process.on('SIGINT', function () { //on ctrl+c
-    process.exit(); //exit completely
-});
-
-
-module.exports = {
-    http: http,
-    io: io
-}
+app.listen(PORT)

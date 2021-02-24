@@ -1,0 +1,118 @@
+.gnBody {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background-color: #001a33;
+}
+
+.button {
+    position: fixed;
+    background-color: black;
+    color: white;
+    width: 15%;
+    height: 15%;
+    font-size: 300%;
+    border: 2px solid #dadada;
+    border-radius: 7px;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+
+.menubttn {
+    position: fixed;
+    background-color: black;
+    color: white;
+    font-size: 150%;
+    border: 2px solid #dadada;
+    border-radius: 7px;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+
+#console {
+    display: none;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 5%;
+}
+
+#bttn1 {
+    left: 0%;
+    top: 95%;
+    width: 20%;
+    height: 5%;
+}
+
+#bttn2 {
+    left: 20%;
+    top: 95%;
+    width: 20%;
+    height: 5%;
+}
+
+#bttn3 {
+    left: 40%;
+    top: 95%;
+    width: 20%;
+    height: 5%;
+}
+
+#bttn4 {
+    left: 60%;
+    top: 95%;
+    width: 20%;
+    height: 5%;
+}
+
+#bttn5 {
+    left: 80%;
+    top: 95%;
+    width: 20%;
+    height: 5%;
+}
+
+#pathConsole {
+    display: none;
+    left: 10%;
+    top: 80%;
+    width: 20%;
+    height: 8%;
+}
+
+.camWindow {
+    position: fixed;
+    top: 6%;
+    width: 30%;
+    left: 15%;
+    border: 2px solid #dadada;
+    border-radius: 7px;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+
+#forwardButton {
+    display: none;
+    left: 62.5%;
+    top: 40%;
+}
+
+#backwardButton {
+    display: none;
+    left: 62.5%;
+    top: 70%;
+}
+
+#turnLeftButton {
+    display: none;
+    left: 75%;
+    top: 55%;
+}
+
+#turnRightButton {
+    display: none;
+    right: 35%;
+    top: 55%;
+}

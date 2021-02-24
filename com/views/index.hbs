@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Load plotly.js into the DOM -->
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module" src="./js/com.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+
+<body>
+    <div class="gnBody">
+        <div id='firstPlot'>
+            <!-- Plotly chart will be drawn inside this DIV -->
+        </div>
+        <div id='secondPlot'>
+            <!-- Plotly chart will be drawn inside this DIV -->
+        </div>
+        <form action="/feedback" method="POST">
+            <input type="submit" name="upvote" value="post feedback" />
+        </form>
+        <div id='console1' width='100%' height='40%'></div>
+        <div id='console2' width='100%' height='40%'></div>
+        
+        <button class="menubttn" id="console">Mode: Manual Movements</button><br>
+        <button class="menubttn" id="bttn1">{{test.dist}}</button>
+        <button class="menubttn" id="bttn2">{{test.angle}}</button>
+        <button class="menubttn" id="bttn3" onclick="startLearningMode()">Start learning mode</button>
+        <button class="menubttn" id="bttn4" onclick="resumeAutoPath()">Resume auto mode and tracking</button>
+        <button class="menubttn" id="bttn5" onclick="activeAutoPath()">Active auto mode and do path</button>
+        <!--<img class="camWindow" src="http://192.168.8.106:8082/">-->
+    </div>
+
+
+    <!-- JavaScript -->
+    <script>
+        //******************** DIAGRAMS ********************
+        //Configuration's data
+        const scannersCoordinates = { fx: 0, fy: 25, bx: 0, by: -25 };
+        const plotObj = {
+            name: 'firstPlot',
+            trace: {
+                x: [scannersCoordinates.fx, scannersCoordinates.bx],
+                y: [scannersCoordinates.fy, scannersCoordinates.by],
+                mode: 'markers',
+                name: 'Scatter'
+            },
+            layout: {
+                title: '____________ y = f(x) ____________'
+            }
+        }
+        const plotObjT = {
+            name: 'secondPlot',
+            trace: {
+                x: [0],
+                y: [0],
+                name: 'Scatter'
+            },
+            layout: {
+                title: '____________ y = f(t) ____________'
+            }
+        }
+        //Alltime data recived from echo [Socket.io]
+        var echoProx = [
+            {
+                distance: 0,
+                lowest: 0,
+                highest: 0,
+                angle: 0
+            }
+        ];
+    </script>
+
+
+</body>
+
+</html>

@@ -1,35 +1,31 @@
-//Immediately-invoked Function Expression
+//___________ Immediately-invoked Function Expression ___________
 (() => {
     require('events').EventEmitter.defaultMaxListeners = 10000;
 })()
-
+//___________ Libraries ___________
+const fetch = require('node-fetch');
+//___________ Modules ___________
 const arduino = require('./arduino')
 const server = require('./com/server')
-const bodyDiag = require('./diag/bodyDiag')
-bodyDiag.hello({
-    name: 'main function',
-    id: '0',
-    output: [0],
-    hardware: { pinout: [0] }
-})
-
+//___________ Communication ___________
+var ScannerController = require('./com/controllers/ScannerController')
 setTimeout(() => {
-    server.io.sockets.on('connection', function (socket) {
-        if (arduino.status = 'ready') {
-            setInterval(() => {
-                const rearScanner = require('./scanners/scanners').rearScanner
-                function commitScanner(scanner) {
-                    if (scanner.commitFlag == true) {
-                        socket.emit("PROXIMITY_" + JSON.stringify(scanner.output[scanner.output.length - 1]))
-                        scanner.commitFlag = false
-                    }
+    //server.io.sockets.on('connection', function (socket) {
+    if (arduino.status = 'ready') {
+        setInterval(() => {
+            const rearScanner = require('./scanners/scanners').rearScanner
+            function commitScanner(scanner) {
+                if (scanner.commitFlag == true) {
+                    ScannerController.data.name = scanner.name
+                    ScannerController.data.output = scanner.output[scanner.output.length - 1]
+                    scanner.commitFlag = false
                 }
-                commitScanner(rearScanner)
-            }, 1)
-        }
+            }
+            commitScanner(rearScanner)
+        }, 1)
+    }
 
-    })
-}, 2000)
+    //})
+}, 10000)
 
-
-
+//setInterval(() => { console.log('data', scannerCtrl.data) }, 1000)
