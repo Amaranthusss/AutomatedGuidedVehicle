@@ -1,12 +1,11 @@
-//import {scanners} from './scanners'
-const scanners = {
-    Rear: { distances: [], angles: [] },
-    Front: { distances: [], angles: [] },
-}
-console.log(window.location.pathname)
+import { scanners } from './js/scanners.js'
+// const scanners = {
+//     Rear: { distances: [], angles: [] },
+//     Front: { distances: [], angles: [] },
+// }
 setInterval(() => {
     fetch('/frontScanner').then(e => e.json()).then(obj => {
-        console.log('frontScanner', obj)
+        //console.log('frontScanner', obj)
         function doubled(scannerSome) {
             if (obj.output.angle != scannerSome.angles[scannerSome.angles.length - 1]) {
                 scannerSome.distances.push(obj.output.dist)
