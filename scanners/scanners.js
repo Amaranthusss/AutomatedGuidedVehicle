@@ -57,7 +57,7 @@ class Scanner {
         if (this.current.data.length >= config.PACKAGE_SIZE)
             this._isolate()
     }
-    _analzye() {
+    _analyze() {
         this.current.highest = Math.max(...this.current.data)
         this.current.lowest = Math.min(...this.current.data)
         this.current.average = Math.round(this.current.data.reduce((a, b) => a + b, 0) / this.current.data.length)
@@ -78,9 +78,8 @@ class Scanner {
     }
     async _isolate() {
         try {
-            await this._analzye()
+            await this._analyze()
             await this.kMeans.start(this.current)
-            //console.log({ dist: Math.round(this.kMeans.body.dist), angle: this.angle.value })
             this.output.push(
                 {
                     dist: Math.round(this.kMeans.body.dist),
@@ -103,8 +102,8 @@ class Scanner {
 }
 
 Scanner.ids = 1
-rearScanner = new Scanner('Rear', pinout.ultraSonicSensorRear)
-//frontScanner = new Scanner('Front', pinout.ultraSonicSensorFront)
+rearScanner = new Scanner('Rear', pinout.scannerRear)
+//frontScanner = new Scanner('Front', pinout.scannerFront)
 
 
 

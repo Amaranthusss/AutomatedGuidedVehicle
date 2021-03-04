@@ -6,6 +6,9 @@
     "name": ""
   },
   "dependencies": {
-    "plotly-notebook-js": "^0.1.2"
+    "express": "^4.17.1",
+    "hbs": "^4.1.1",
+    "plotly-notebook-js": "^0.1.2",
+    "ws": "^7.4.3"
   }
 }

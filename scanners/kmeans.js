@@ -1,4 +1,4 @@
-const findKMeans = (arrayToProcess, Clusters) => {
+const _findKMeans = (arrayToProcess, Clusters) => {
 	var Groups = [];
 	var Centroids = [];
 	var oldCentroids = [];
@@ -100,7 +100,7 @@ module.exports = class KMeans {
 			}
 			const step1 = () => { //k-Means algorithm for all input data
 				return new Promise((resolve, reject) => {
-					this.body.clusters = findKMeans(scannerOutput.data, this.body.k); //Take clusters of k-Means
+					this.body.clusters = _findKMeans(scannerOutput.data, this.body.k); //Take clusters of k-Means
 					resolve();
 				})
 			}
@@ -134,7 +134,7 @@ module.exports = class KMeans {
 					}
 					this.steps.beforeGrossError = this.body.best;
 					if (this.steps.grossErrorK > 0)
-						this.body.best = findKMeans(this.body.best, this.steps.grossErrorK).sort((a, b) => { return b.length - a.length })[0];
+						this.body.best = _findKMeans(this.body.best, this.steps.grossErrorK).sort((a, b) => { return b.length - a.length })[0];
 					resolve();
 				})
 			}

@@ -32,7 +32,7 @@ ledStripLeft = new LedStrip(6);
 ledStripMiddle = new LedStrip(7);
 ledStripRight = new LedStrip(5);
 //_________________________ Ultrasonic Sensors _________________________
-class UltraSonicSensor {
+class Scanner {
     constructor(ECHO, TRIG, A, B, C, D) {
         this.ECHO = ECHO; //Raspberry Pi's input
         this.TRIG = TRIG; //Raspberry Pi's output
@@ -94,8 +94,8 @@ axises = {
     }
 }
 scanners = {
-    ultraSonicSensorFront: new UltraSonicSensor(25, 18, 46, 48, 50, 52),
-    ultraSonicSensorRear: new UltraSonicSensor(24, 23, 38, 40, 42, 44)
+    scannerFront: new Scanner(25, 18, 46, 48, 50, 52),
+    scannerRear: new Scanner(24, 23, 38, 40, 42, 44)
 }
 
 
