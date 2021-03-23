@@ -4,7 +4,8 @@ const bodyParser = require('body-parser')
 const app = express()
 const path = require('path')
 //___________ Configuration ___________
-const PORT = process.env.PORT || 8080
+const port = require('../config/config').SERVER.PORT
+const PORT = process.env.PORT || port
 app.set('views', path.join(__dirname, '..', 'frontend', 'build'));
 app.set('view engine', 'hbs')
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));

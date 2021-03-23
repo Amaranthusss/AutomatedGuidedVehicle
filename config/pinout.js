@@ -1,55 +1,12 @@
-//_________________________ Encoders _________________________
-class Encoder {
-    constructor(A, B) {
-        this.A = A; //Digital input of Arduino
-        this.B = B; //Digital input of Arduino
-    }
+//_________________________ Raspberry Pi _________________________
+coolerRaspPi = { pwm: 12 }
+//_________________________ Lighting _________________________
+const brakeLight = { r: 2, g: 3, b: 4 }
+const lighting = {
+    left: { pwm: 6 },
+    middle: { pwm: 7 },
+    right: { pwm: 5 }
 }
-//_________________________ Fans _________________________
-class Fan {
-    constructor(PWM) {
-        this.PWM = PWM; //Digital output of Arduino
-    }
-}
-fanRaspPi = new Fan(12);
-fanMotherBoard = new Fan(13);
-//_________________________ RGB LED Strips _________________________
-class LedRGB {
-    constructor(R, G, B) {
-        this.R = R; //Digital output of Arduino
-        this.G = G; //Digital output of Arduino
-        this.B = B; //Digital output of Arduino
-    }
-}
-stopLight = new LedRGB(2, 3, 4);
-//_________________________ RGB LED Strips _________________________
-class LedStrip {
-    constructor(PWM) {
-        this.PWM = PWM; //Digital output of Arduino
-    }
-}
-ledStripLeft = new LedStrip(6);
-ledStripMiddle = new LedStrip(7);
-ledStripRight = new LedStrip(5);
-//_________________________ Ultrasonic Sensors _________________________
-class Scanner {
-    constructor(ECHO, TRIG, A, B, C, D) {
-        this.ECHO = ECHO; //Raspberry Pi's input
-        this.TRIG = TRIG; //Raspberry Pi's output
-        this.A = A; //Digital output of Arduino
-        this.B = B; //Digital output of Arduino
-        this.C = C; //Digital output of Arduino
-        this.D = D; //Digital output of Arduino
-    }
-}
-//_________________________ DHT 11 _________________________
-const dhtSensor = { data: 22 }; //Digital input of Arduino
-//_________________________ Error Diode _________________________
-const errorDiode = { state: 37 }; //Digital output of Arduino
-//_________________________ Voltage Sensor _________________________
-const voltageSensor = { read: 0 }; //Analog input of Arduino
-//_________________________ Current Sensor _________________________
-const currentSensor = { read: 1 }; //Analog input of Arduino
 //_________________________ Control Panel _________________________
 const controlPanel = {
     bttn1: 24,
@@ -57,63 +14,48 @@ const controlPanel = {
     bttn3: 26,
     bttn4: 27,
     bttn5: 28,
-}; //Digital inputs of Arduino
-//_________________________ Ultrasonic Sensors _________________________
-class DiodesRj45 {
-    constructor(YELLOW, GREEN) {
-        this.YELLOW = YELLOW; //Digital output of Arduino
-        this.GREEN = GREEN; //Digital output of Arduino
-    }
 }
-rj45Left = new DiodesRj45(29, 30);
-rj45Right = new DiodesRj45(31, 32);
-//_________________________ Motors _________________________
-class Motor {
-    constructor(EN, DIR, STEP) {
-        this.EN = EN; //Raspberry Pi's output
-        this.DIR = DIR; //Raspberry Pi's output
-        this.STEP = STEP; //Raspberry Pi's output
-    }
-}
-axises = {
+//_________________________ Axises _________________________
+const axises = {
     leftFront: {
-        motor: new Motor(17, 27, 22),
-        encoder: new Encoder(53, 51)
+        motor: { en: 17, dir: 27, step: 22 },
+        encoder: { a: 53, b: 51 }
     },
     leftRear: {
-        motor: new Motor(21, 20, 16),
-        encoder: new Encoder(45, 43)
+        motor: { en: 21, dir: 20, step: 16 },
+        encoder: { a: 45, b: 43 }
     },
     rightFront: {
-        motor: new Motor(6, 5, 13),
-        encoder: new Encoder(49, 47)
+        motor: { en: 6, dir: 5, step: 13 },
+        encoder: { a: 49, b: 47 }
     },
     rightRear: {
-        motor: new Motor(26, 19, 12),
-        encoder: new Encoder(41, 39)
+        motor: { en: 26, dir: 19, step: 12 },
+        encoder: { a: 41, b: 39 }
     }
 }
-scanners = {
-    scannerFront: new Scanner(25, 18, 46, 48, 50, 52),
-    scannerRear: new Scanner(24, 23, 38, 40, 42, 44)
+//_________________________ Scanners _________________________
+const scanners = {
+    scannerFront: { echo: 25, trig: 18, a: 46, b: 48, c: 50, d: 52 },
+    scannerRear: { echo: 24, trig: 23, a: 38, b: 40, c: 42, d: 44 }
 }
-
-
-//_________________________ Encoders _________________________
+//_________________________ Motherboard _________________________
+const motherboard = {
+    rj45Left: { yellow: 29, green: 30 },
+    rj45Right: { yellow: 31, green: 32 },
+    errorDiode: { state: 37 },
+    cooler: { pwm: 13 },
+    voltageSensor = { read: 'A0' },
+    currentSensor = { read: 'A1' },
+    dhtSensor = { data: 22 }
+}
+//****************************************************
 module.exports = pinout = {
+    coolerRaspPi,
+    brakeLight,
+    lighting,
+    controlPanel,
     axises,
     scanners,
-    fanRaspPi,
-    fanMotherBoard,
-    stopLight,
-    ledStripLeft,
-    ledStripMiddle,
-    ledStripRight,
-    dhtSensor,
-    errorDiode,
-    voltageSensor,
-    currentSensor,
-    controlPanel,
-    rj45Left,
-    rj45Right
+    motherboard
 };

@@ -1,6 +1,8 @@
+//___________ Libraries ___________
 const WebSocket = require('ws');
-
-const wss = new WebSocket.Server({ port: 8081 })
+//___________ Configuration ___________
+const port = require('../config/config').SERVER.ASYNC_PORT
+const wss = new WebSocket.Server({ port: port })
 
 /*
 wss.on('connection', function connection(ws) {

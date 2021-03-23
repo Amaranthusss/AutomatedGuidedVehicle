@@ -1,6 +1,6 @@
 const config = require('../config/config').SCANNERS
-const arduino = require('../arduino').arduino
-const scanners = require('./scanners')
+const arduino = require('../Arduino').arduino
+const scanners = require('./Scanners')
 const diag = require('../diag/bodyDiag')
 
 module.exports = class Motor {

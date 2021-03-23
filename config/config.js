@@ -1,3 +1,7 @@
+const SERVER = {
+    PORT: 8080, //Port of server with frontend - website (Express)
+    ASYNC_PORT: 8081 //Port of asynchronous server communicate with frontend (WebSocket)
+}
 const LEARNING = {
     PART_TIME: 200,
     STEPS_LIMIT: 9999999999999999
@@ -16,10 +20,30 @@ const SCANNERS = {
     DELAY_TO_START: 10000 //Time of delay to start scanning by scanners, time is started at arduino's ready status
 }
 const AXISES = {
-    
+    PWM: 150, //Higher value of PWM should use more current
+    MAX_PWM_FREQ: 2000, //Stepper drivers can reach frequency up to 20kHz
+    MIN_PWM_FREQ: 0, //Lowest value of frequency, moment of turning off axis' work
+    RISING_FREQ_STEP: 100, //Slew speed of velocity - linear
+    FALLING_FREQ_STEP: 300, //Speed of descent of velocity - linear
+    ENCODING_INTERVAL: 1, //Time at interval to read and compare state at encoders of each axis
+    ENABLE: false, //Default false is enable, true is disable
+    DIRECTION: true, //Default false means backward, true means forward
+    ACCELERATION: 2000, //Time at interval to get next level of PWM frequency for each axis
+    WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
+    HARDWARE_PUL_PER_REV: 200 //Hardware configuration placed at stepper drivers at DIP pins
 }
-
+const LIGHTING = {
+    LEFT_STRIP_LENGTH: 12,
+    MIDLE_STRIP_LENGTH: 12,
+    RIGHT_STRIP_LENGTH: 12,
+    GAMMA: 2.8,
+    SHIFTING_INTERVAL: 300, //Time between shifting animation at shade effect
+    DIFFERENCE_AT_SHADING: 5 //Difference at RGB for shade animation effect
+}
 module.exports = {
+    SERVER,
+    AXISES,
     LEARNING,
-    SCANNERS
+    SCANNERS,
+    LIGHTING
 }

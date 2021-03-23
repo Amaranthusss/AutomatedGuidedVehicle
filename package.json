@@ -6,6 +6,7 @@
     "name": ""
   },
   "dependencies": {
+    "colornames": "^1.1.1",
     "express": "^4.17.1",
     "hbs": "^4.1.1",
     "plotly-notebook-js": "^0.1.2",

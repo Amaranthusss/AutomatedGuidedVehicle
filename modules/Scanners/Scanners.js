@@ -3,17 +3,16 @@ const Gpio = require('pigpio').Gpio
 const KMeans = require('./kmeans')
 const Motor = require('./motor')
 const config = require('../config/config').SCANNERS
-const diag = require('../diag/bodyDiag')
+const Module = require('../diag/bodyDiag').Module
+const { inRange } = require('../../Global/math')
 
-class Scanner {
-    constructor(name, pinout) {
+class Scanner extends Module {
+    constructor(...module) {
         this.hardware = {
-            pinout: Object.assign({}, pinout),
-            trig: new Gpio(pinout.TRIG, { mode: Gpio.OUTPUT }),
-            echo: new Gpio(pinout.ECHO, { mode: Gpio.INPUT, alert: true })
+            ...this.hardware,
+            trig: new Gpio(this.hardware.pinout.TRIG, { mode: Gpio.OUTPUT }),
+            echo: new Gpio(this.hardware.pinout.ECHO, { mode: Gpio.INPUT, alert: true })
         }
-        this.name = name
-        this.id = Scanner.ids++
         this.current = {
             data: [],
             lowest: config.SENSOR_MAX_RANGE,
@@ -24,7 +23,7 @@ class Scanner {
         this.interval = null
         this.kMeans = new KMeans()
         this.motor = new Motor(this.hardware.pinout)
-        diag.hello(this)
+        this._sayHi()
         this.hardware.trig.digitalWrite(0) //Prepare trigger pin
         this.motor._home() //Get lowest possible angle at motor
         this.angle = {
@@ -66,8 +65,8 @@ class Scanner {
         else
             this.angle.value--
         if (this.angle.ini == true)
-            if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE)
-                this.motor._changeDir()
+            inRange(this.angle.value, -config.MAX_ANGLE + 1, config.MAX_ANGLE - 1) === false ? this.motor._changeDir() : {}
+            //if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE) this.motor._changeDir()
         this.angle.ini = true
     }
     _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }
@@ -91,23 +90,32 @@ class Scanner {
             await this._clearData()
             this.commitFlag = true
         } catch (error) {
-            diag.message(this, '_isolate() error: ' + error.message)
+            this._message('_isolate() error: ' + error.message)
+        }
+    }
+    commitData(con) {
+        if (this.commitFlag == true) {
+            let scannerData = {
+                name: this.name,
+                output: this.output[this.output.length - 1]
+            }
+            con.send(JSON.stringify(scannerData))
+            this.commitFlag = false
         }
     }
     /** Prints all variables used at scanner class. */
-    printDebbug() { console.log('\n[', this.name, ':', this.id, ']\n', this.current, '\n', this.kMeans.return()) }
-    /** Prints scanner's output structure. */
-    printf() { diag.hello(this, true) }
+    printDebbug() {
+        this._message(JSON.stringify(this.current) + '\n' + JSON.stringify(this.kMeans.return()))
+    }
 
 }
 
-Scanner.ids = 1
 rearScanner = new Scanner('Rear', pinout.scannerRear)
-//frontScanner = new Scanner('Front', pinout.scannerFront)
+frontScanner = new Scanner('Front', pinout.scannerFront)
 
 
 
 module.exports = {
     rearScanner: rearScanner,
-    //frontScanner: frontScanner
+    frontScanner: frontScanner
 }
