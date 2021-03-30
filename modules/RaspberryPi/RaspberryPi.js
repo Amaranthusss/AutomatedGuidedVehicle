@@ -1,64 +1,61 @@
-const internal = {};
+var pi = require('node-raspi')
+const { Module } = require('../Module')
+const { Pin } = require('johnny-five')
+const pinout = require('../../config/pinout').coolerRaspPi
+const config = require('../../config/config').RASPBERRYPI
+const arduino = require('../Arduino').arduino
+const { inRange } = require('../../Global/math')
+const fs = require('fs')
 
-//Diagnosis CPU temperature
-var pi = require('node-raspi');
-var temperature, voltage = null;
+class RaspberryPi extends Module {
+    constructor(...params) {
+        super(...params)
+        this.hardware = {
+            ...this.hardware,
+            cooler: arduino.pinMode(pinout.pwm, Pin.PWM)
+        }
+        this.temp = pi.getThrm()
+        this.voltage = pi.getVcc() / 1000
+        this.cooling = false
+        this.coolerState = 'NaN'
+        this.coolerPWM = 0
+        this.refreshDataInterval = setInterval(() => this._refreshData(), config.CHECK_TEMPERATURE_INTERVAL)
+        this._getReady()
+        this._message(`Initial CPU temperature: ${this.temp}°C, CPU voltage: ${this.voltage}V via node-raspi.`)
+    }
+    _refreshData() {
+        this.temp = fs.readFileSync('/sys/class/thermal/thermal_zone0/temp') / 1000
+        if (this.temp <= config.COOLER_TEMP_STOP && this.cooling === true)
+            this.cooling = false
+        if (this.temp >= config.COOLER_TEMP_START && this.cooling === false)
+            this.cooling = true
+        if (this.cooling) {
+            if (this.temp >= config.COOLER_TEMP_START && this.temp <= config.COOLER_TEMP_START + 4) {
+                this.coolerState = 'warm'
+                this.coolerPWM = config.PWM_BOOST_AT_HOT * Math.round(this.temp)
+            }
+            else if (this.temp > config.COOLER_TEMP_START + 4) {
+                this.coolerState = 'overheating'
+                this.coolerPWM = config.PWM_BOOST_AT_OVERHEATING * Math.round(this.temp)
+            }
+            else {
+                this.coolerState = 'warm'
+                this.coolerPWM = config.PWM_BOOST_AT_WARM * Math.round(this.temp)
+            }
+            this.hardware.cooler.analogWrite(
+                pinout.pwm,
+                inRange(this.coolerPWM, { max: 255, min: 160, limit: true })
+            )
+        } else {
+            this.coolerState = 'cool'
+            this.coolerPWM = 0
+            this.hardware.cooler.analogWrite(pinout.pwm, 0)
+        }
+    }
+    coolerInfo() {
+        this._message(`CPU temperature: ${this.temp}°C from the [temp] file. PWM: ${this.coolerPWM}, state: ${this.coolerState}`)
+    }
+}
 
-
-module.exports = internal.Diagnosis = class {
-    constructor() {
-    }
-    ctrPanel() {
-        /**
-         * Shows at console temperature and voltage at Raspberry Pi's CPU
-         * 
-         */
-        console.log("Temp: " + temperature + ", Volt: " + voltage / 1000);
-    }
-    getTemp() {
-        /**
-         * Returns value of last measured temperature at Raspberry Pi's CPU
-         * 
-         */
-        return temperature;
-    }
-    getVoltage()
-    {
-        /**
-         * Returns value of last measured voltage at Raspberry Pi's CPU
-         * 
-         */
-        return voltage;
-    }
-    refreshData()
-    {
-        /**
-         * Measures temperature and voltage at Raspberry Pi's CPU
-         * At console can be buffored alert of pigpio
-         * 
-         */
-        temperature = pi.getThrm();
-        voltage = pi.getVcc();
-    }
-
-};
-
-/*
- if (buttonStartStop.readSync() === 1) {
- console.log("Przycisk wcisniety");
- }
- 
- if (redLedButton.readSync() === 0) { //check the pin state, if the state is 0 (or off)
- redLedButton.writeSync(1); //set pin state to 1 (turn LED on)
- greenLedButton.writeSync(0); //set pin state to 1 (turn LED on)
- } else {
- redLedButton.writeSync(0); //set pin state to 0 (turn LED off)
- greenLedButton.writeSync(1); //set pin state to 1 (turn LED on)
- }
- 
- enLeftRear.writeSync(0);
- enRightRear.writeSync(0);
- enLeftFront.writeSync(0);
- enRightFront.writeSync(0);
- 
- */
+raspberryPi = new RaspberryPi('Raspberry Pi', pinout)
+module.exports = { raspberryPi: raspberryPi }

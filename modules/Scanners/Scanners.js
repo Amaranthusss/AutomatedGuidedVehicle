@@ -1,17 +1,18 @@
-const pinout = require('../config/pinout').scanners
+const pinout = require('../../config/pinout').scanners
 const Gpio = require('pigpio').Gpio
 const KMeans = require('./kmeans')
 const Motor = require('./motor')
-const config = require('../config/config').SCANNERS
-const Module = require('../diag/bodyDiag').Module
+const config = require('../../config/config').SCANNERS
+const { Module } = require('../Module')
 const { inRange } = require('../../Global/math')
 
 class Scanner extends Module {
-    constructor(...module) {
+    constructor(...params) {
+        super(...params)
         this.hardware = {
             ...this.hardware,
-            trig: new Gpio(this.hardware.pinout.TRIG, { mode: Gpio.OUTPUT }),
-            echo: new Gpio(this.hardware.pinout.ECHO, { mode: Gpio.INPUT, alert: true })
+            trig: new Gpio(this.hardware.pinout.trig, { mode: Gpio.OUTPUT }),
+            echo: new Gpio(this.hardware.pinout.echo, { mode: Gpio.INPUT, alert: true })
         }
         this.current = {
             data: [],
@@ -23,7 +24,6 @@ class Scanner extends Module {
         this.interval = null
         this.kMeans = new KMeans()
         this.motor = new Motor(this.hardware.pinout)
-        this._sayHi()
         this.hardware.trig.digitalWrite(0) //Prepare trigger pin
         this.motor._home() //Get lowest possible angle at motor
         this.angle = {
@@ -32,6 +32,7 @@ class Scanner extends Module {
         }
         this.output = []
         this.commitFlag = false
+        this._getReady()
     }
     /** Starts measurement based at ultrasonic sensor. */
     start() {
@@ -66,7 +67,7 @@ class Scanner extends Module {
             this.angle.value--
         if (this.angle.ini == true)
             inRange(this.angle.value, -config.MAX_ANGLE + 1, config.MAX_ANGLE - 1) === false ? this.motor._changeDir() : {}
-            //if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE) this.motor._changeDir()
+        //if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE) this.motor._changeDir()
         this.angle.ini = true
     }
     _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }

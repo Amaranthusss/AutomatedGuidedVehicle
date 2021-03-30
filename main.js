@@ -6,7 +6,6 @@ const asyncServer = require('./server/websocket')
 //___________ Configuration ___________
 const config = require('./config/config')
 //___________ Modules ___________
-const raspberryPi = require('./modules/RaspberryPi/RaspberryPi')
 const arduino = require('./modules/Arduino')
 //___________ Communication ___________
 if (arduino.status = 'ready') {

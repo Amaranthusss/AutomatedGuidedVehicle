@@ -1,15 +1,13 @@
-const config = require('../config/config').SCANNERS
+const config = require('../../config/config').SCANNERS
 const arduino = require('../Arduino').arduino
-const scanners = require('./Scanners')
-const diag = require('../diag/bodyDiag')
 
 module.exports = class Motor {
     constructor(pinout) {
         this.pins = {
-            A: arduino.pinMode(pinout.A, 1),
-            B: arduino.pinMode(pinout.B, 1),
-            C: arduino.pinMode(pinout.C, 1),
-            D: arduino.pinMode(pinout.D, 1)
+            A: arduino.pinMode(pinout.a, 1),
+            B: arduino.pinMode(pinout.b, 1),
+            C: arduino.pinMode(pinout.c, 1),
+            D: arduino.pinMode(pinout.d, 1)
         }
         this.rotate = {
             sr: [0, 0, 0, 0], //Shift register
@@ -19,10 +17,10 @@ module.exports = class Motor {
         this.repeater = 0
         this.interval = null
         this.pinout = [
-            pinout.A,
-            pinout.B,
-            pinout.C,
-            pinout.D
+            pinout.a,
+            pinout.b,
+            pinout.c,
+            pinout.d
         ]
     }
     _rotateScanner() {

@@ -2,9 +2,21 @@ const SERVER = {
     PORT: 8080, //Port of server with frontend - website (Express)
     ASYNC_PORT: 8081 //Port of asynchronous server communicate with frontend (WebSocket)
 }
+const RASPBERRYPI = {
+    CHECK_TEMPERATURE_INTERVAL: 5000,
+    COOLER_TEMP_START: 37,
+    COOLER_TEMP_STOP: 32,
+    PWM_BOOST_AT_WARM: 4,
+    PWM_BOOST_AT_HOT: 5,
+    PWM_BOOST_AT_OVERHEATING: 10
+}
+const MOTHERBOARD = {
+    VOLTAGE_SENSOR_MAX_SCALE: 13,
+    CURRENT_SENSOR_MAX_SCALE: 30,
+    LOW_LIMIT_AGV_VOLTAGE: 11
+}
 const LEARNING = {
-    PART_TIME: 200,
-    STEPS_LIMIT: 9999999999999999
+    FOLDER: './paths/'
 }
 const SCANNERS = {
     MICROSECDONDS_PER_CM: 1e6 / 34321, //Estimated speed of sound [us/cm]
@@ -26,22 +38,25 @@ const AXISES = {
     RISING_FREQ_STEP: 100, //Slew speed of velocity - linear
     FALLING_FREQ_STEP: 300, //Speed of descent of velocity - linear
     ENCODING_INTERVAL: 1, //Time at interval to read and compare state at encoders of each axis
-    ENABLE: false, //Default false is enable, true is disable
+    ENABLE: true, //Default false is enable, true is disable
     DIRECTION: true, //Default false means backward, true means forward
     ACCELERATION: 2000, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
-    HARDWARE_PUL_PER_REV: 200 //Hardware configuration placed at stepper drivers at DIP pins
+    HARDWARE_PUL_PER_REV: 200, //Hardware configuration placed at stepper drivers at DIP pins
 }
 const LIGHTING = {
-    LEFT_STRIP_LENGTH: 12,
-    MIDLE_STRIP_LENGTH: 12,
-    RIGHT_STRIP_LENGTH: 12,
-    GAMMA: 2.8,
+    LEFT_STRIP_LENGTH: 12, //Amount of diodes at left strip
+    MIDDLE_STRIP_LENGTH: 12, //Amount of diodes at middle strip
+    RIGHT_STRIP_LENGTH: 12, //Amount of diodes at right strip
+    GAMMA: 2.8, //Recommended gamma of lighting at all strips
     SHIFTING_INTERVAL: 300, //Time between shifting animation at shade effect
-    DIFFERENCE_AT_SHADING: 5 //Difference at RGB for shade animation effect
+    DIFFERENCE_AT_SHADING: 5, //Difference at RGB for shade animation effect
+    DYNAMIC_RAINBOW_DELAY: 500 //Time between changing color of diodes at strip
 }
 module.exports = {
     SERVER,
+    RASPBERRYPI,
+    MOTHERBOARD,
     AXISES,
     LEARNING,
     SCANNERS,

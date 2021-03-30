@@ -1,5 +1,5 @@
 //_________________________ Raspberry Pi _________________________
-coolerRaspPi = { pwm: 12 }
+const coolerRaspPi = { pwm: 12 }
 //_________________________ Lighting _________________________
 const brakeLight = { r: 2, g: 3, b: 4 }
 const lighting = {
@@ -45,9 +45,9 @@ const motherboard = {
     rj45Right: { yellow: 31, green: 32 },
     errorDiode: { state: 37 },
     cooler: { pwm: 13 },
-    voltageSensor = { read: 'A0' },
-    currentSensor = { read: 'A1' },
-    dhtSensor = { data: 22 }
+    voltageSensor: { read: 'A0' },
+    currentSensor: { read: 'A1' },
+    dhtSensor: { data: 22 }
 }
 //****************************************************
 module.exports = pinout = {

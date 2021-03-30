@@ -13,7 +13,13 @@ function hexToRgb(h) {
         +"0x".concat(h[5], h[6])
     ]
 }
-module.exports = { 
+function range(start, stop) {
+    return start > stop ?
+        new Array(start + 1).fill(start).map((e, i) => e -= i)
+        : new Array(stop - start + 1).fill(start).map((e, i) => e += i)
+}
+module.exports = {
     inRange: inRange,
-    hexToRgb: hexToRgb
- }
+    hexToRgb: hexToRgb,
+    range: range
+}

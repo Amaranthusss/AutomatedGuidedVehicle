@@ -1,4 +1,4 @@
-const Module = require('../../Global/Modules').Module
+const { Module } = require('../Module')
 const pinout = require('../../config/pinout').controlPanel
 const { Switch } = require('johnny-five')
 const arduino = require('../Arduino').arduino
@@ -15,7 +15,13 @@ class ControlPanel extends Module {
             btn4: new Switch(pinout.bttn4),
             btn5: new Switch(pinout.bttn5)
         }
-        arduino.repl.inject({ toggle: toggle })
+        arduino.repl.inject({
+            toggle: this.hardware.btn1,
+            toggle: this.hardware.btn2,
+            toggle: this.hardware.btn3,
+            toggle: this.hardware.btn4,
+            toggle: this.hardware.btn5,
+        })
         btn1.on("close", open('btn1'))
         btn1.on("open", close('btn1'))
         btn2.on("close", open('btn2'))
@@ -26,6 +32,7 @@ class ControlPanel extends Module {
         btn4.on("open", close('btn4'))
         btn5.on("close", open('btn5'))
         btn5.on("open", close('btn5'))
+        this._getReady()
     }
     open(btn) {
         console.log(btn, 'has been opened')

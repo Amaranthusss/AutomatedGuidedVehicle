@@ -6,11 +6,12 @@ class Module {
         this.state = 'uninitialized'
         Modules.ids.push({ id: this.id, name: this.name })
     }
-    _sayHi() {
-        console.log(`[${this.name} $[this.constructor.name]: ${this.id}] has been initialized`)
+    _getReady() {
+        this.state = 'ready'
+        console.log(`[${this.name} (class ${this.constructor.name}): ${this.id}] has been initialized`)
     }
     _message(msg) {
-        console.log(`[${this.name} $[this.constructor.name]: ${this.id}] ${msg}`)
+        console.log(`[${this.name}: ${this.id}] ${msg}`)
         return msg
     }
     print() {
