@@ -4,6 +4,7 @@ const { Pin } = require('johnny-five')
 const pinout = require('../../config/pinout').coolerRaspPi
 const config = require('../../config/config').RASPBERRYPI
 const arduino = require('../Arduino').arduino
+const { motherboard } = require('../Motherboard/Motherboard')
 const { inRange } = require('../../Global/math')
 const fs = require('fs')
 
@@ -30,6 +31,7 @@ class RaspberryPi extends Module {
         if (this.temp >= config.COOLER_TEMP_START && this.cooling === false)
             this.cooling = true
         if (this.cooling) {
+            motherboard.setCooler('raspiFan', true)
             if (this.temp >= config.COOLER_TEMP_START && this.temp <= config.COOLER_TEMP_START + 4) {
                 this.coolerState = 'warm'
                 this.coolerPWM = config.PWM_BOOST_AT_HOT * Math.round(this.temp)
@@ -47,10 +49,12 @@ class RaspberryPi extends Module {
                 inRange(this.coolerPWM, { max: 255, min: 160, limit: true })
             )
         } else {
+            motherboard.setCooler('raspiFan', false)
             this.coolerState = 'cool'
             this.coolerPWM = 0
             this.hardware.cooler.analogWrite(pinout.pwm, 0)
         }
+
     }
     coolerInfo() {
         this._message(`CPU temperature: ${this.temp}°C from the [temp] file. PWM: ${this.coolerPWM}, state: ${this.coolerState}`)

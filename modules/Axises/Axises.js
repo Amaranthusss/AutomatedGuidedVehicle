@@ -26,10 +26,8 @@ class Axis extends Module {
             tEnd: [],
             dir: false
         }
-        this.hardware.en = config.ENABLE
-        this.hardware.step.pwmFrequency(0)
-        this.hardware.step.pwmWrite(0)
-        this.velocity = { freq: 0, speed: 0.0, previousCmds: [], previousVels: [] }
+        this.hardware.en.digitalWrite(!config.ENABLE)
+        this.velocity = { freq: 0, speed: 0.0 }
         //arduino.digitalRead(this.hardware.pinout.encoder.a, value => { this.encoding.lastState = value })
         //this.encodingInterval = setInterval(() => this._encodingLoop(), config.ENCODING_INTERVAL)
         this._getReady()
@@ -55,19 +53,30 @@ class Axis extends Module {
     drive(cmd) {
         this.hardware.en.digitalWrite(_cmdRead(this.name, cmd).en)
         this.hardware.dir.digitalWrite(_cmdRead(this.name, cmd).dir)
-        if (this.hardware.en.digitalRead() === config.ENABLE) //Acceleration
-            this.velocity.freq = inRange(this.velocity.freq += config.RISING_FREQ_STEP, { max: config.MAX_PWM_FREQ, limit: true })
-        else //Braking
-            this.velocity.freq = inRange(this.velocity.freq -= config.FALLING_FREQ_STEP, { min: config.MIN_PWM_FREQ, limit: true })
-        //Error diagnosis - frequency out of range
-        inRange(this.velocity.freq, { min: config.MIN_PWM_FREQ, max: config.MAX_PWM_FREQ }) === false ?
-            this._message('Frequency out of range (' + this.velocity.freq +
-                '), where [min: ' + config.MIN_PWM_FREQ + ', max: ' + config.MAX_PWM_FREQ + '].') : {}
-        this.hardware.step.pwmFrequency(this.velocity.freq)
-        this.hardware.step.pwmWrite(this.velocity.freq > config.MIN_PWM_FREQ ? config.PWM : 0)
-        //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
-        this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.velocity.freq / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+        let i = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
+        console.log(i, '/', config.FREQ_ARRAY.length)
+        this.velocity.freq = config.FREQ_ARRAY[i < config.FREQ_ARRAY.length - 1 ? i + 1 : i]
+        if (cmd != undefined) { //Acceleration
+            if (this.hardware.step.getPwmFrequency() != this.velocity.freq)
+                this.hardware.step.pwmFrequency(this.velocity.freq)
+            let pwm = this.hardware.step.getPwmFrequency() >= config.MEDIUM_PWM_FREQ_MIN ? config.PWM_MEDIUM : config.PWM_LOW
+            this.hardware.step.pwmWrite(pwm)
+            //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
+            this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
+                / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+        } else { //Breaking
+            this.velocity.freq = config.FREQ_ARRAY[0]
+            this.hardware.step.pwmFrequency(0)
+            this.hardware.step.pwmWrite(0)
+        }
         let output = [this.velocity.speed, cmd]
+        console.log(this.name,
+            this.hardware.step.getPwmFrequency(),
+            this.hardware.step.getPwmDutyCycle(),
+            this.velocity.speed,
+            this.hardware.en.digitalRead(),
+            this.hardware.dir.digitalRead(),
+        )
         return output
     }
 }
@@ -82,26 +91,75 @@ class Controller extends Module {
         this.history = []
     }
     goForward() {
-        this.history.push(this.leftFrontAxis.drive('forward'))
+        const cmd = 'forward'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     turnLeft() {
-        this.history.push(this.leftFrontAxis.drive('turnLeft'))
+        const cmd = 'turnLeft'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     turnRight() {
-        this.history.push(this.leftFrontAxis.drive('turnRight'))
+        const cmd = 'turnRight'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     goBackward() {
-        this.history.push(this.leftFrontAxis.drive('backward'))
+        const cmd = 'backward'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     reverseLeft() {
-        this.history.push(this.leftFrontAxis.drive('reverseLeft'))
+        const cmd = 'reverseLeft'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     reverseRight() {
-        this.history.push(this.leftFrontAxis.drive('reverseRight'))
+        const cmd = 'reverseRight'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
     }
     stop() {
         this.history.push(this.leftFrontAxis.drive())
+        this.leftRearAxis.drive()
+        this.rightFrontAxis.drive()
+        this.rightRearAxis.drive()
     }
 }
 const controller = new Controller()
+/*
+let testIntervalForward, testIntervalBackward
+const t = 9000
+testIntervalForward = setInterval(() => {
+    controller.goForward()
+    console.log('------------------')
+}, config.ACCELERATION)
+console.log('ruszyl')
+setTimeout(() => {
+    clearInterval(testIntervalForward)
+    controller.stop()
+    testIntervalBackward = setInterval(() => {
+        controller.goBackward()
+        console.log('------------------')
+    }, config.ACCELERATION)
+}, t)
+setTimeout(() => {
+    clearInterval(testIntervalBackward)
+    controller.stop()
+    console.log('zatrzymal sie')
+}, t * 2 - config.ACCELERATION)
+*/
 module.exports = controller

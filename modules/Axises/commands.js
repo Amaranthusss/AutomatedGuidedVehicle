@@ -6,7 +6,7 @@ function _cmdRead(name, cmd) {
         command = 'stop'
     const confList = {
         forward: {
-            'Left Front': { en: ENABLE, dir: DIRECTION },
+            'Left Front': { en: ENABLE, dir: !DIRECTION },
             'Right Front': { en: ENABLE, dir: DIRECTION },
             'Left Rear': { en: ENABLE, dir: DIRECTION },
             'Right Rear': { en: ENABLE, dir: DIRECTION }
@@ -24,7 +24,7 @@ function _cmdRead(name, cmd) {
             'Right Rear': { en: ENABLE, dir: DIRECTION }
         },
         backward: {
-            'Left Front': { en: ENABLE, dir: !DIRECTION },
+            'Left Front': { en: ENABLE, dir: DIRECTION },
             'Right Front': { en: ENABLE, dir: !DIRECTION },
             'Left Rear': { en: ENABLE, dir: !DIRECTION },
             'Right Rear': { en: ENABLE, dir: !DIRECTION }

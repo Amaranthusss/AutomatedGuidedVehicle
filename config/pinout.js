@@ -17,11 +17,11 @@ const controlPanel = {
 }
 //_________________________ Axises _________________________
 const axises = {
-    leftFront: {
+    leftRear: {
         motor: { en: 17, dir: 27, step: 22 },
         encoder: { a: 53, b: 51 }
     },
-    leftRear: {
+    leftFront: {
         motor: { en: 21, dir: 20, step: 16 },
         encoder: { a: 45, b: 43 }
     },
