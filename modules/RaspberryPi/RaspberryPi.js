@@ -15,14 +15,14 @@ class RaspberryPi extends Module {
             ...this.hardware,
             cooler: arduino.pinMode(pinout.pwm, Pin.PWM)
         }
-        this.temp = pi.getThrm()
-        this.voltage = pi.getVcc() / 1000
+        this.temp = 0 //pi.getThrm()
+        this.voltage = 4.4 //pi.getVcc() / 1000
         this.cooling = false
         this.coolerState = 'NaN'
         this.coolerPWM = 0
         this.refreshDataInterval = setInterval(() => this._refreshData(), config.CHECK_TEMPERATURE_INTERVAL)
         this._getReady()
-        this._message(`Initial CPU temperature: ${this.temp}°C, CPU voltage: ${this.voltage}V via node-raspi.`)
+        //this._message(`Initial CPU temperature: ${this.temp}°C, CPU voltage: ${this.voltage}V via node-raspi.`)
     }
     _refreshData() {
         this.temp = fs.readFileSync('/sys/class/thermal/thermal_zone0/temp') / 1000

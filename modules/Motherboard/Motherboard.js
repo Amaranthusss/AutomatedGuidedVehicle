@@ -19,7 +19,7 @@ class Motherboard extends Module {
             alarm: new Led(pinout.errorDiode.state),
             cooler: arduino.pinMode(pinout.cooler.pwm, Pin.PWM),
             voltageSensor: new Sensor(pinout.voltageSensor.read),
-            currentSensor: new Sensor({ pin: pinout.currentSensor.read}),
+            currentSensor: new Sensor({ pin: pinout.currentSensor.read }),
             //dht: new Multi({ controller: "DHT11_I2C_NANO_BACKPACK" })
         }
         /*this.hardware.dht.on("change", function () {
@@ -32,7 +32,7 @@ class Motherboard extends Module {
         this.temperature = 0
         this.alarmDiodeStates = { lowVoltage: false }
         this.coolerStates = { raspiFan: false }
-        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 500)
+        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 60000)
         this.hardware.voltageSensor.on("change", () => {
             this.voltage = ((this.hardware.voltageSensor.value * VOLTAGE_SENSOR.ARDUNIO_REFERENCE / 1024)
                 / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE)).toFixed(2)
@@ -41,6 +41,7 @@ class Motherboard extends Module {
             this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066).toFixed(4)
             //this.current = this.hardware.currentSensor.fscaleTo(0, 30)
         })
+        /*
         {
             let five = require("johnny-five")
             let scale = five.Fn.scale
@@ -104,7 +105,7 @@ class Motherboard extends Module {
                     }
                 }
             })
-        }
+        }*/
 
         this._getReady()
     }

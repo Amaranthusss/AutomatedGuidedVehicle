@@ -1,7 +1,6 @@
 //___________ Immediately-invoked Function Expression ___________
 (() => require('events').EventEmitter.defaultMaxListeners = 10000)()
 //___________ Linkers ___________
-const syncServer = require('./server/server')
 const asyncServer = require('./server/websocket')
 //___________ Configuration ___________
 const config = require('./config/config')

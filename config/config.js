@@ -20,7 +20,7 @@ const MOTHERBOARD = {
         ARDUNIO_REFERENCE: 5.015, //measured voltage at arduino output pin
         LOWER_RESISTANCE: 11000, //measured resistance of lower resistor
         HIGHER_RESISTANCE: 33000, //measured resistance of higher resistor
-        LOW_VOLTAGE_LEVEL: 12 //value to detect low level energy power at accumulators
+        LOW_VOLTAGE_LEVEL: 11.5 //value to detect low level energy power at accumulators
     }
 }
 const LEARNING = {
@@ -47,7 +47,7 @@ const AXISES = {
     ENCODING_INTERVAL: 1, //Time at interval to read and compare state at encoders of each axis
     ENABLE: false, //Default false is enable, true is disable
     DIRECTION: false, //
-    ACCELERATION: 1000, //Time at interval to get next level of PWM frequency for each axis
+    ACCELERATION: 300, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
     HARDWARE_PUL_PER_REV: 1600, //Hardware configuration placed at stepper drivers at DIP pins
 }

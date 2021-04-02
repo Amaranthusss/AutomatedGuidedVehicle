@@ -85,12 +85,13 @@ class Axis extends Module {
             this.hardware.step.pwmWrite(0)
         }
         let output = [this.velocity.speed, reCmd]
-        console.log(this.name,
-            this.hardware.step.getPwmFrequency(), 'Hz\n',
-            this.hardware.step.getPwmDutyCycle(), 'pwm\n',
-            this.velocity.speed, 'km/h\n',
-            this.hardware.en.digitalRead(), 'en\n',
-            this.hardware.dir.digitalRead(), 'dir',
+        console.log(this.name, '[',
+            this.hardware.step.getPwmFrequency(), 'Hz ] [',
+            this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
+            this.velocity.speed, 'km/h ] [',
+            this.hardware.en.digitalRead(), 'en ] [',
+            this.hardware.dir.digitalRead(), 'dir ] [',
+            reCmd, cmd, ' ]'
         )
         return output
     }
@@ -106,6 +107,7 @@ class Controller extends Module {
         this.history = []
     }
     goForward() {
+        console.log('forward leci')
         const cmd = 'forward'
         this.history.push(this.leftFrontAxis.drive(cmd))
         this.leftRearAxis.drive(cmd)
@@ -162,6 +164,7 @@ class Controller extends Module {
         this.rightRearAxis.drive(cmd)
     }
     stop() {
+        console.log('stop leci')
         this.history.push(this.leftFrontAxis.drive())
         this.leftRearAxis.drive()
         this.rightFrontAxis.drive()
@@ -169,7 +172,7 @@ class Controller extends Module {
     }
 }
 const controller = new Controller()
-
+/*
 let testIntervalForward, testIntervalBackward
 const t = 8000
 setTimeout(() => {
@@ -191,7 +194,7 @@ setTimeout(() => {
         controller.stop()
         console.log('zatrzymal sie')
     }, t * 2 - config.ACCELERATION)
-}, 1000)
+}, 1000)*/
 
 
 module.exports = controller

@@ -4,7 +4,7 @@ const WebSocket = require('ws');
 const port = require('../config/config').SERVER.ASYNC_PORT
 const wss = new WebSocket.Server({ port: port })
 
-
+/*
 wss.on('connection', function connection(ws) {
   console.log('[WebSocket]', 'Server has been established')
   ws.on('message', function incoming(message) {
@@ -12,5 +12,5 @@ wss.on('connection', function connection(ws) {
     if (packet.cmd === 'forward')
       console.log(packet.data)
   })
-})
+})*/
 module.exports = wss

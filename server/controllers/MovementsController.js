@@ -1,63 +1,57 @@
+const { ACCELERATION } = require('../../config/config').AXISES
 const controller = require('../../modules/Axises/Axises')
 
-const controls = [0, 0, 0, 0]
+const controls = [false, false, false, false]
 
 function getForwardCmd(req, res) {
-    controls.forward = req.body.state
+    controls[0] = req.body.state
     updateCtrl()
     res.end('Post done')
 }
 function getBackwardCmd(req, res) {
-    controls.backward = req.body.state
+    controls[1] = req.body.state
     updateCtrl()
     res.end('Post done')
 }
 function getLeftCmd(req, res) {
-    controls.left = req.body.state
+    controls[2] = req.body.state
     updateCtrl()
     res.end('Post done')
 }
 function getRightCmd(req, res) {
-    controls.right = req.body.state
+    controls[3] = req.body.state
     updateCtrl()
     res.end('Post done')
 }
+var interval
 function updateCtrl() {
+    clearInterval(interval)
     let stopTest = controls.find(el => el == true)
     if (stopTest === false)
         controller.stop()
     else {
-        switch (controls) { //[up, left, right, down]
-            case [1, 0, 0, 0]:
-                controller.goForward()
-                break
-            case [0, 1, 0, 0]:
-                controller.turnLeft()
-                break
-            case [0, 0, 1, 0]:
-                controller.turnRight()
-                break
-            case [1, 1, 0, 0]:
-                controller.goLeft()
-                break
-            case [1, 0, 1, 0]:
-                controller.goRight()
-                break
-            case [0, 0, 0, 1]:
-                controller.goBackward()
-                break
-            case [0, 1, 0, 1]:
-                controller.reverseLeft()
-                break
-            case [0, 0, 1, 1]:
-                controller.reverseRight()
-                break
+        switch (controls.join()) { //[up, down, left, right]
+            case [true, false, false, false].join():
+                interval = setInterval(() => { controller.goForward() }, ACCELERATION); break
+            case [false, false, true, false].join():
+                interval = setInterval(() => { controller.turnLeft() }, ACCELERATION); break
+            case [false, false, false, true].join():
+                interval = setInterval(() => { controller.turnRight() }, ACCELERATION); break
+            case [true, false, true, false].join():
+                interval = setInterval(() => { controller.goLeft() }, ACCELERATION); break
+            case [true, false, false, true].join():
+                interval = setInterval(() => { controller.goRight() }, ACCELERATION); break
+            case [false, true, false, false].join():
+                interval = setInterval(() => { controller.goBackward() }, ACCELERATION); break
+            case [false, true, true, false].join():
+                interval = setInterval(() => { controller.reverseLeft() }, ACCELERATION); break
+            case [false, true, false, true].join():
+                interval = setInterval(() => { controller.reverseRight() }, ACCELERATION); break
             default:
-                controller.stop()
-                break
+                controller.stop(); break
         }
     }
-
+    console.log('controls', controls)
 }
 
 module.exports = {

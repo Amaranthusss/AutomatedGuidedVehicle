@@ -13,6 +13,7 @@ board.on("ready", function () {
     //setTimeout(() => { scanners.rearScanner.start(); console.log('Scanner has been started') }, config.SCANNERS.DELAY_TO_START)
 
     //___________ Modules ___________
+    const syncServer = require('../server/server')
     const raspberryPi = require('./RaspberryPi/RaspberryPi')
     const motherboard = require('./Motherboard/Motherboard')
     const rearScanner = require('./Scanners/Scanners').rearScanner
