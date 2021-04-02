@@ -2,7 +2,7 @@ const { ENABLE, DIRECTION } = require('../../config/config').AXISES
 
 function _cmdRead(name, cmd) {
     let command = cmd
-    if (cmd == undefined)
+    if ([undefined, null].some(e => e === cmd))
         command = 'stop'
     const confList = {
         forward: { //go forward
@@ -24,7 +24,7 @@ function _cmdRead(name, cmd) {
             'Right Rear': { en: ENABLE, dir: DIRECTION }
         },
         goLeft: { //go forward and to the left 
-            'Left Front': { en: ENABLE, dir: !DIRECTION, torsion: false},
+            'Left Front': { en: ENABLE, dir: !DIRECTION, torsion: false },
             'Right Front': { en: ENABLE, dir: DIRECTION, torsion: false },
             'Left Rear': { en: ENABLE, dir: DIRECTION, torsion: false },
             'Right Rear': { en: ENABLE, dir: DIRECTION, torsion: false }
