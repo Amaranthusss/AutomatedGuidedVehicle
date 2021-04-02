@@ -23,6 +23,18 @@ function _cmdRead(name, cmd) {
             'Left Rear': { en: !ENABLE, dir: DIRECTION },
             'Right Rear': { en: ENABLE, dir: DIRECTION }
         },
+        goLeft: {
+            'Left Front': { en: ENABLE, dir: !DIRECTION },
+            'Right Front': { en: ENABLE, dir: DIRECTION },
+            'Left Rear': { en: ENABLE, dir: DIRECTION },
+            'Right Rear': { en: ENABLE, dir: DIRECTION }
+        },
+        goRight: {
+            'Left Front': { en: ENABLE, dir: !DIRECTION },
+            'Right Front': { en: ENABLE, dir: DIRECTION },
+            'Left Rear': { en: ENABLE, dir: DIRECTION },
+            'Right Rear': { en: ENABLE, dir: DIRECTION }
+        },
         backward: {
             'Left Front': { en: ENABLE, dir: DIRECTION },
             'Right Front': { en: ENABLE, dir: !DIRECTION },

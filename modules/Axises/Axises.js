@@ -111,6 +111,20 @@ class Controller extends Module {
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
+    goLeft() {
+        const cmd = 'goLeft'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
+    }
+    goRight() {
+        const cmd = 'goRight'
+        this.history.push(this.leftFrontAxis.drive(cmd))
+        this.leftRearAxis.drive(cmd)
+        this.rightFrontAxis.drive(cmd)
+        this.rightRearAxis.drive(cmd)
+    }
     goBackward() {
         const cmd = 'backward'
         this.history.push(this.leftFrontAxis.drive(cmd))

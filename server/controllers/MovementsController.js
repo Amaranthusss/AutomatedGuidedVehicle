@@ -1,40 +1,68 @@
-const axises = require('../../modules/Axises/Axises')
+const controller = require('../../modules/Axises/Axises')
+
+const controls = [0, 0, 0, 0]
+
 function getForwardCmd(req, res) {
-    if (req.body.state === true)
-        console.log('jedz do przodu')
-    else
-        console.log('zatrzymaj sie z jazdy w przod')
+    controls.forward = req.body.state
+    updateCtrl()
     res.end('Post done')
 }
 function getBackwardCmd(req, res) {
-    if (req.body.state === true)
-        console.log('jedz do tylu')
-    else
-        console.log('zatrzymaj sie z jazdy do tylu')
+    controls.backward = req.body.state
+    updateCtrl()
     res.end('Post done')
 }
 function getLeftCmd(req, res) {
-    if (req.body.state === true)
-        console.log('jedz w lewo')
-    else
-        console.log('zatrzymaj sie z jazdy w lewo')
+    controls.left = req.body.state
+    updateCtrl()
     res.end('Post done')
 }
 function getRightCmd(req, res) {
-    if (req.body.state === true)
-        console.log('jedz w prawo')
-    else
-        console.log('zatrzymaj sie z jazdy w prawo')
+    controls.right = req.body.state
+    updateCtrl()
     res.end('Post done')
 }
-const controls = {
-    
-    //let cooling = Object.entries(this.coolerStates).find(el => el[1] == true)
+function updateCtrl() {
+    let stopTest = controls.find(el => el == true)
+    if (stopTest === false)
+        controller.stop()
+    else {
+        switch (controls) { //[up, left, right, down]
+            case [1, 0, 0, 0]:
+                controller.goForward()
+                break
+            case [0, 1, 0, 0]:
+                controller.turnLeft()
+                break
+            case [0, 0, 1, 0]:
+                controller.turnRight()
+                break
+            case [1, 1, 0, 0]:
+                controller.goLeft()
+                break
+            case [1, 0, 1, 0]:
+                controller.goRight()
+                break
+            case [0, 0, 0, 1]:
+                controller.goBackward()
+                break
+            case [0, 1, 0, 1]:
+                controller.reverseLeft()
+                break
+            case [0, 0, 1, 1]:
+                controller.reverseRight()
+                break
+            default:
+                controller.stop()
+                break
+        }
+    }
+
 }
 
 module.exports = {
-    getForwardCmd: getForwardCmd,
-    getBackwardCmd: getBackwardCmd,
-    getLeftCmd: getLeftCmd,
-    getRightCmd: getRightCmd
+    getForwardCmd,
+    getBackwardCmd,
+    getLeftCmd,
+    getRightCmd
 }
