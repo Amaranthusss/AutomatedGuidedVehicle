@@ -50,7 +50,6 @@ const AXISES = {
     ACCELERATION: 1000, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
     HARDWARE_PUL_PER_REV: 1600, //Hardware configuration placed at stepper drivers at DIP pins
-    TORSION: 0.5 //Ratio to decrease frequency at axises during torsions
 }
 const LIGHTING = {
     LEFT_STRIP_LENGTH: 12, //Amount of diodes at left strip

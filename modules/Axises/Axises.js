@@ -53,7 +53,8 @@ class Axis extends Module {
     drive(cmd) {
         //If velocity is too low for torsions turn off slower motors
         let reCmd = cmd
-        let halfFreq = config.FREQ_ARRAY[Math.floor(config.FREQ_ARRAY.length / 2)]
+        let freqI = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
+        let halfFreq = config.FREQ_ARRAY[Math.floor(freqI / 2)]
         if (this.velocity.freq < halfFreq)
             if (cmd === 'goLeft')
                 reCmd = 'turnLeft'
@@ -67,8 +68,7 @@ class Axis extends Module {
             this.velocity.freq = halfFreq
         else {
             //Increase velocity of this axis about constant step
-            let i = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
-            this.velocity.freq = config.FREQ_ARRAY[i < config.FREQ_ARRAY.length - 1 ? i + 1 : i]
+            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 ? freqI + 1 : freqI]
         }
         //Active acceleration or istant braking
         if (reCmd != undefined) { //Acceleration
