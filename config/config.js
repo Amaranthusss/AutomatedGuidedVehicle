@@ -11,9 +11,17 @@ const RASPBERRYPI = {
     PWM_BOOST_AT_OVERHEATING: 10
 }
 const MOTHERBOARD = {
-    VOLTAGE_SENSOR_MAX_SCALE: 13,
-    CURRENT_SENSOR_MAX_SCALE: 30,
-    LOW_LIMIT_AGV_VOLTAGE: 12
+    CURRENT_SENSOR: {
+        SENSITIVITY: 66, //mV/A
+        ARDUINO_VOLTAGE: 5000, //mV
+        OFFSET_FOR_ZERO_CURRENT: 2500 //mV
+    },
+    VOLTAGE_SENSOR: {
+        ARDUNIO_REFERENCE: 5.015, //measured voltage at arduino output pin
+        LOWER_RESISTANCE: 11000, //measured resistance of lower resistor
+        HIGHER_RESISTANCE: 33000, //measured resistance of higher resistor
+        LOW_VOLTAGE_LEVEL: 12 //value to detect low level energy power at accumulators
+    }
 }
 const LEARNING = {
     FOLDER: './paths/'

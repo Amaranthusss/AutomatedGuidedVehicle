@@ -140,26 +140,29 @@ class Controller extends Module {
     }
 }
 const controller = new Controller()
-/*
+
 let testIntervalForward, testIntervalBackward
-const t = 9000
-testIntervalForward = setInterval(() => {
-    controller.goForward()
-    console.log('------------------')
-}, config.ACCELERATION)
-console.log('ruszyl')
+const t = 8000
 setTimeout(() => {
-    clearInterval(testIntervalForward)
-    controller.stop()
-    testIntervalBackward = setInterval(() => {
-        controller.goBackward()
+    testIntervalForward = setInterval(() => {
+        controller.goForward()
         console.log('------------------')
     }, config.ACCELERATION)
-}, t)
-setTimeout(() => {
-    clearInterval(testIntervalBackward)
-    controller.stop()
-    console.log('zatrzymal sie')
-}, t * 2 - config.ACCELERATION)
-*/
+    console.log('ruszyl')
+    setTimeout(() => {
+        clearInterval(testIntervalForward)
+        controller.stop()
+        testIntervalBackward = setInterval(() => {
+            controller.goBackward()
+            console.log('------------------')
+        }, config.ACCELERATION)
+    }, t)
+    setTimeout(() => {
+        clearInterval(testIntervalBackward)
+        controller.stop()
+        console.log('zatrzymal sie')
+    }, t * 2 - config.ACCELERATION)
+}, 1000)
+
+
 module.exports = controller
