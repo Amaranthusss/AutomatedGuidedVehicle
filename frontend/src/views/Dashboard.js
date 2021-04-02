@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
+import Controller from '../components/Controller/Controller'
 
 // reactstrap components
 import {
@@ -118,7 +119,8 @@ function Dashboard(props) {
         <Row>
           <Col lg="4">
             <div>
-              <p>Empty slot</p>
+              <p>Controller</p>
+              <Controller />
             </div>
           </Col>
           <Col lg="4">

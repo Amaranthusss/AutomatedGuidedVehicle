@@ -1,9 +1,7 @@
-// ##############################
-// // // Chart variables
-// #############################
+const client = require('../server/clientWebSocket')
 
 // chartExample1 and chartExample2 options
-let chart1_2_options = {
+const chart1_2_options = {
   maintainAspectRatio: false,
   legend: {
     display: false,
@@ -52,18 +50,8 @@ let chart1_2_options = {
     ],
   },
 };
-//const IP = '127.0.0.1'
-const IP = '192.168.8.115'
-const W3CWebSocket = require('websocket').w3cwebsocket
-const client = new W3CWebSocket('ws://' + IP + ':8081')
-client.onopen = () => {
-  console.log('WebSocket Client Connected')
-};
 
-// #########################################
-// // // used inside src/views/Dashboard.js
-// #########################################
-let chartExample1 = {
+const chartExample1 = {
   data: (canvas) => {
     const ini = {
       x: [],
@@ -102,29 +90,19 @@ let chartExample1 = {
     var myChart = new Chart(ctx, config);
 
     setInterval(function () {
-      fetch('/test').then(e => e.json()).then(obj => {
+      /*fetch('/test').then(e => e.json()).then(obj => {
         i++
         config.data.labels.push(i)
         config.data.datasets[0].data.push(obj.output.dist)
-        /*console.log({
-          'obj': obj,
-          'i': i,
-          'labels': config.data.labels,
-          'data': config.data.datasets[0].data
-        })*/
         myChart.update();
-      })
+      })*/
     }, 3000)
     return config.data
   },
   options: chart1_2_options,
 }
 
-
-// #########################################
-// // // used inside src/views/Dashboard.js
-// #########################################
-let chartExample2 = {
+const chartExample2 = {
   data: (canvas) => {
     var ctx = canvas.getContext("2d");
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -167,10 +145,7 @@ let chartExample2 = {
   options: chart1_2_options,
 }
 
-// #########################################
-// // // used inside src/views/Dashboard.js
-// #########################################
-let rearScannerChart = {
+const rearScannerChart = {
   data: (canvas) => {
     const ini = {
       x: [],
@@ -222,9 +197,7 @@ let rearScannerChart = {
   options: chart1_2_options,
 };
 
-// #########################################
-// // // used inside src/views/Dashboard.js
-// #########################################
+
 const chartExample4 = {
   data: (canvas) => {
     let ctx = canvas.getContext("2d");
@@ -312,8 +285,8 @@ const chartExample4 = {
 };
 
 module.exports = {
-  chartExample1, // in src/views/Dashboard.js
-  chartExample2, // in src/views/Dashboard.js
-  rearScannerChart, // in src/views/Dashboard.js
-  chartExample4, // in src/views/Dashboard.js
+  chartExample1,
+  chartExample2,
+  rearScannerChart,
+  chartExample4
 };

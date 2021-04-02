@@ -1,4 +1,4 @@
-class ScannerJSON {
+/*class ScannerJSON {
     constructor(name, id) {
         this.name = name
         this.output = []
@@ -11,4 +11,4 @@ const scannersList = [
     new ScannerJSON('Front', 2)
 ]
 
-export default scannersList
+export default scannersList*/

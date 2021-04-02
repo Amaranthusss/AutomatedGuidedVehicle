@@ -19,3 +19,4 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', routes)
 
 app.listen(PORT)
+const ws = require('./websocket')
