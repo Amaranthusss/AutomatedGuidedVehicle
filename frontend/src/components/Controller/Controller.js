@@ -23,7 +23,7 @@ class Controller extends React.Component {
             case 's': id = 1; break
             case 'a': id = 2; break
             case 'd': id = 3; break
-            default: return; break
+            default: return //Able to use only specified above keys
         }
         object = this.states[id] //Pick suitable state
         if (e.type === 'keydown')
