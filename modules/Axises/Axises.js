@@ -51,12 +51,27 @@ class Axis extends Module {
         this.encoderState = this.encoding.a
     }
     drive(cmd) {
-        this.hardware.en.digitalWrite(_cmdRead(this.name, cmd).en)
-        this.hardware.dir.digitalWrite(_cmdRead(this.name, cmd).dir)
-        let i = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
-        console.log(i, '/', config.FREQ_ARRAY.length)
-        this.velocity.freq = config.FREQ_ARRAY[i < config.FREQ_ARRAY.length - 1 ? i + 1 : i]
-        if (cmd != undefined) { //Acceleration
+        //If velocity is too low for torsions turn off slower motors
+        let reCmd = cmd
+        let halfFreq = config.FREQ_ARRAY[Math.floor(config.FREQ_ARRAY.length / 2)]
+        if (this.velocity.freq < halfFreq)
+            if (cmd === 'goLeft')
+                reCmd = 'turnLeft'
+            else if (cmd === 'goRight')
+                reCmd = 'turnRight'
+        //Pick specified configuration for movement
+        this.hardware.en.digitalWrite(_cmdRead(this.name, reCmd).en)
+        this.hardware.dir.digitalWrite(_cmdRead(this.name, reCmd).dir)
+        //Overwrite frequency if this is motor at torsion (slowed)
+        if (['goLeft', 'goRight', 'reverseLeft', 'reverseRight'].some(e => e === reCmd) && _cmdRead(this.name, reCmd).torsion)
+            this.velocity.freq = halfFreq
+        else {
+            //Increase velocity of this axis about constant step
+            let i = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
+            this.velocity.freq = config.FREQ_ARRAY[i < config.FREQ_ARRAY.length - 1 ? i + 1 : i]
+        }
+        //Active acceleration or istant braking
+        if (reCmd != undefined) { //Acceleration
             if (this.hardware.step.getPwmFrequency() != this.velocity.freq)
                 this.hardware.step.pwmFrequency(this.velocity.freq)
             let pwm = this.hardware.step.getPwmFrequency() >= config.MEDIUM_PWM_FREQ_MIN ? config.PWM_MEDIUM : config.PWM_LOW
@@ -64,18 +79,18 @@ class Axis extends Module {
             //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
             this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
                 / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
-        } else { //Breaking
+        } else { //Braking
             this.velocity.freq = config.FREQ_ARRAY[0]
             this.hardware.step.pwmFrequency(0)
             this.hardware.step.pwmWrite(0)
         }
-        let output = [this.velocity.speed, cmd]
+        let output = [this.velocity.speed, reCmd]
         console.log(this.name,
-            this.hardware.step.getPwmFrequency(),
-            this.hardware.step.getPwmDutyCycle(),
-            this.velocity.speed,
-            this.hardware.en.digitalRead(),
-            this.hardware.dir.digitalRead(),
+            this.hardware.step.getPwmFrequency(), 'Hz\n',
+            this.hardware.step.getPwmDutyCycle(), 'pwm\n',
+            this.velocity.speed, 'km/h\n',
+            this.hardware.en.digitalRead(), 'en\n',
+            this.hardware.dir.digitalRead(), 'dir',
         )
         return output
     }
