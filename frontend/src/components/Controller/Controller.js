@@ -1,8 +1,6 @@
 import React from 'react'
 import { Button } from 'reactstrap'
-import client from '../../server/clientWebSocket'
 import axios from 'axios'
-
 
 class Controller extends React.Component {
     constructor(props) {
