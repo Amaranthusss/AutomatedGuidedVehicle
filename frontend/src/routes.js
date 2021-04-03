@@ -1,10 +1,8 @@
 import Dashboard from "views/Dashboard.js";
 import Icons from "views/Icons.js";
-import Map from "views/Map.js";
 import Notifications from "views/Notifications.js";
 import TableList from "views/TableList.js";
 import Typography from "views/Typography.js";
-import UserProfile from "views/UserProfile.js";
 
 var routes = [
   {
@@ -22,24 +20,10 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/map",
-    name: "Diagnostic",
-    icon: "tim-icons icon-pin",
-    component: Map,
-    layout: "/admin",
-  },
-  {
     path: "/notifications",
     name: "Learning",
     icon: "tim-icons icon-bell-55",
     component: Notifications,
-    layout: "/admin",
-  },
-  {
-    path: "/user-profile",
-    name: "User Profile",
-    icon: "tim-icons icon-single-02",
-    component: UserProfile,
     layout: "/admin",
   },
   {

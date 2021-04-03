@@ -118,10 +118,15 @@ function Dashboard(props) {
         </Row>
         <Row>
           <Col lg="4">
-            <div>
-              <p>Controller</p>
-              <Controller />
-            </div>
+            <Card className="card-chart">
+              <CardHeader>
+                <h5 className="card-category">Movements</h5>
+                <CardTitle tag="h3"> <i className="tim-icons icon-delivery-fast text-primary" />{" "} Controller </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <Controller />
+              </CardBody>
+            </Card>
           </Col>
           <Col lg="4">
             <Card className="card-chart">

@@ -91,8 +91,8 @@ function Admin(props) {
             <Sidebar
               routes={routes}
               logo={{
-                outterLink: "https://www.creative-tim.com/",
-                text: "Creative Tim",
+                outterLink: "https://github.com/Amaranthusss/",
+                text: "AGV",
                 imgSrc: logo,
               }}
               toggleSidebar={toggleSidebar}
@@ -107,10 +107,7 @@ function Admin(props) {
                 {getRoutes(routes)}
                 <Redirect from="*" to="/admin/dashboard" />
               </Switch>
-              {
-                // we don't want the Footer to be rendered on map page
-                location.pathname === "/admin/maps" ? null : <Footer fluid />
-              }
+              <Footer fluid />
             </div>
           </div>
         </React.Fragment>
