@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from 'reactstrap'
 import cmds from './commands'
-import { Mic } from 'react-bootstrap-icons'
+import { Mic, ThermometerSun } from 'react-bootstrap-icons'
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 
@@ -29,7 +29,9 @@ class Controller extends React.Component {
         }
     }
     async startListening() {
-        if (this.state.bttnColor === 'primary')
+        await this.rec.abort()
+        await this.rec.stop()
+        if (this.state.bttnColor === 'danger')
             await this.rec.start()
     }
     render() {
@@ -48,9 +50,9 @@ class Controller extends React.Component {
                         onMouseDown={cmds._buttonHandler} onMouseUp={cmds._buttonHandler}>Backward</Button>
                 </div>
                 <Button style={{ float: 'right' }} color={this.state.bttnColor}
-                    onClick={() => {
-                        this.setState({ bttnColor: this.state.bttnColor === 'primary' ? 'danger' : 'primary' });
-                        this.startListening()
+                    onClick={async () => {
+                        await this.setState({ bttnColor: this.state.bttnColor === 'primary' ? 'danger' : 'primary' });
+                        await this.startListening()
                     }}
                 ><Mic color="white" /></Button>
             </>
