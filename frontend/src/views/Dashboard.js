@@ -106,10 +106,10 @@ function Dashboard(props) {
                       {value => (
                         <CircularProgressbar
                           value={value}
-                          text={`${value}\nkm/h`}
+                          text={`${value} km/h`}
                           maxValue={12}
                           circleRatio={0.75}
-                          strokeWidth={3}
+                          strokeWidth={4}
                           styles={buildStyles({
                             rotation: 1 / 2 + 1 / 8,
                             strokeLinecap: "butt",
