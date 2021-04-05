@@ -14,6 +14,7 @@ router.post('/upCmd', MovementsController.getForwardCmd)
 router.post('/downCmd', MovementsController.getBackwardCmd)
 router.post('/leftCmd', MovementsController.getLeftCmd)
 router.post('/rightCmd', MovementsController.getRightCmd)
+router.post('/maxSpeedCmd', MovementsController.getMaxSpeedCmd)
 
 
 module.exports = router

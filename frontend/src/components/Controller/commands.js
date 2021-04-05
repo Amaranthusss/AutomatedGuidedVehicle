@@ -5,7 +5,8 @@ const commands = {
         { state: false, ref: '/upCmd', lastType: '' },
         { state: false, ref: '/downCmd', lastType: '' },
         { state: false, ref: '/leftCmd', lastType: '' },
-        { state: false, ref: '/rightCmd', lastType: '' }
+        { state: false, ref: '/rightCmd', lastType: '' },
+        { state: false, ref: '/maxSpeedCmd', lastType: '' }
     ],
     _keyboardHandler: async e => { //Key events have intervals so there was required transfer limit
         let id, object
@@ -14,6 +15,7 @@ const commands = {
             case 's': id = 1; break
             case 'a': id = 2; break
             case 'd': id = 3; break
+            case 'Shift': id = 4; break
             default: return //Able to use only specified above keys
         }
         object = commands.states[id] //Pick suitable state

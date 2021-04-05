@@ -6,6 +6,7 @@ const { inRange } = require('../../Global/math')
 const { _cmdRead } = require('./commands')
 const { Pin } = require('johnny-five')
 const Gpio = require('pigpio').Gpio
+const maxSpeedCmd = require('../../server/controllers/MovementsController').maxSpeed
 
 class Axis extends Module {
     constructor(...params) {
@@ -68,7 +69,7 @@ class Axis extends Module {
             this.velocity.freq = halfFreq
         else {
             //Increase velocity of this axis about constant step
-            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 ? freqI + 1 : freqI]
+            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeedCmd ? freqI + 1 : freqI]
         }
         //Active acceleration or istant braking
         if (reCmd != undefined) { //Acceleration

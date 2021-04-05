@@ -2,6 +2,7 @@ const { ACCELERATION } = require('../../config/config').AXISES
 const controller = require('../../modules/Axises/Axises')
 
 const controls = [false, false, false, false]
+const maxSpeed = false
 
 function getForwardCmd(req, res) {
     controls[0] = req.body.state
@@ -20,6 +21,11 @@ function getLeftCmd(req, res) {
 }
 function getRightCmd(req, res) {
     controls[3] = req.body.state
+    updateCtrl()
+    res.end('Post done')
+}
+function getMaxSpeedCmd(req, res) {
+    maxSpeed = !req.body.state
     updateCtrl()
     res.end('Post done')
 }
@@ -58,5 +64,7 @@ module.exports = {
     getForwardCmd,
     getBackwardCmd,
     getLeftCmd,
-    getRightCmd
+    getRightCmd,
+    getMaxSpeedCmd,
+    maxSpeed
 }
