@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from 'reactstrap'
 import cmds from './commands'
-import { Mic, ThermometerSun } from 'react-bootstrap-icons'
+import { Mic } from 'react-bootstrap-icons'
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 

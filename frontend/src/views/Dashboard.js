@@ -5,6 +5,25 @@ import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
 import Controller from '../components/Controller/Controller'
 
+
+
+import { render } from 'react-dom'
+// Import react-circular-progressbar module and styles
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from 'react-circular-progressbar'
+import 'react-circular-progressbar/dist/styles.css'
+// Animation
+import { easeQuadInOut } from "d3-ease";
+import AnimatedProgressProvider from '../components/Speedometer/AnimatedProgressProvider'
+import ChangingProgressProvider from '../components/Speedometer/ChangingProgressProvider'
+// Radial separators
+import RadialSeparators from '../components/Speedometer/RadialSeparators'
+
+
+
 // reactstrap components
 import {
   Button,
@@ -53,7 +72,8 @@ function Dashboard(props) {
   const [bigChartData, setbigChartData] = React.useState("data1");
   const setBgChartData = (name) => {
     setbigChartData(name);
-  };
+  }
+
   return (
     <>
       <div className="content">
@@ -62,36 +82,47 @@ function Dashboard(props) {
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
-                <CardTitle tag="h3">
-                  <i className="tim-icons icon-sound-wave text-info" />
-                  Velocity
-                </CardTitle>
+                <CardTitle tag="h3"> <i className="tim-icons icon-delivery-fast text-primary" />{" "} Controller </CardTitle>
               </CardHeader>
               <CardBody>
-                <div className="chart-area">
-                  <Line
-                    data={chartExample1.data}
-                    options={chartExample1.options}
-                  />
-                </div>
+                <Controller />
               </CardBody>
             </Card>
           </Col>
           <Col lg="4">
             <Card className="card-chart">
               <CardHeader>
-                <h5 className="card-category">Diagnostic</h5>
+                <h5 className="card-category">Movements</h5>
                 <CardTitle tag="h3">
                   <i className="tim-icons icon-delivery-fast text-primary" />{" "}
-                  Current
+                  Velocity
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                <div className="chart-area">
-                  <Bar
-                    data={chartExample4.data}
-                    options={chartExample4.options}
-                  />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: 221 }}>
+                    <ChangingProgressProvider
+                      easingFunction={easeQuadInOut}>
+                      {value => (
+                        <CircularProgressbar
+                          value={value}
+                          text={`${value}\nkm/h`}
+                          maxValue={12}
+                          circleRatio={0.75}
+                          strokeWidth={3}
+                          styles={buildStyles({
+                            rotation: 1 / 2 + 1 / 8,
+                            strokeLinecap: "butt",
+                            textColor: "#2375c6",
+                            pathColor: "#2375c6",
+                            trailColor: "#13406c",
+                            textSize: '100%'
+                          })}
+                        />
+                      )}
+                    </ChangingProgressProvider>
+                  </div>
+
                 </div>
               </CardBody>
             </Card>
@@ -121,10 +152,18 @@ function Dashboard(props) {
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
-                <CardTitle tag="h3"> <i className="tim-icons icon-delivery-fast text-primary" />{" "} Controller </CardTitle>
+                <CardTitle tag="h3">
+                  <i className="tim-icons icon-sound-wave text-info" />
+                  Velocity
+                </CardTitle>
               </CardHeader>
               <CardBody>
-                <Controller />
+                <div className="chart-area">
+                  <Line
+                    data={chartExample1.data}
+                    options={chartExample1.options}
+                  />
+                </div>
               </CardBody>
             </Card>
           </Col>
