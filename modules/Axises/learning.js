@@ -1,5 +1,6 @@
 const config = require('../../config/config').LEARNING
 const { readFromFile, writeToFile } = require("../../global/jsonCtrl")
+const { sleep } = require('../../global/math')
 const controller = {
     history:
         [
@@ -47,12 +48,6 @@ const learning = {
     },
     _autoDrive: async () => {
         try {
-            function sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms))
-            }
-            async function print(cmd) {
-                controller._message(`Autodrive: step ${idx}/${learning.readData.length} at cmd ${cmd}`)
-            }
             const asyncInterval = async (callback, ms) => {
                 return new Promise((resolve, reject) => {
                     const interval = setInterval(async () => {
@@ -64,13 +59,11 @@ const learning = {
                     }, ms)
                 })
             }
-
-            console.log('autodrive')
             let idx = 0
             for await (el of learning.readData) {
                 idx++
                 await learning._cmdToFcn(el[1])
-                await print(el[1])
+                controller._message(`Autodrive: step ${idx}/${learning.readData.length} at cmd ${el[1]}`)
                 const condition = async () => { return controller.highestFreq >= el[0] }
                 await asyncInterval(condition, 100)
             }

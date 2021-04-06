@@ -18,8 +18,12 @@ function range(start, stop) {
         new Array(start + 1).fill(start).map((e, i) => e -= i)
         : new Array(stop - start + 1).fill(start).map((e, i) => e += i)
 }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 module.exports = {
     inRange: inRange,
     hexToRgb: hexToRgb,
-    range: range
+    range: range,
+    sleep: sleep
 }
