@@ -1,7 +1,7 @@
-const freq = require('../../modules/Axises/Axises').highestFreq
+const controller = require('../../modules/Axises/Axises')
 
 function setFreqDisplay(req, res) {
-    res.send({ highestFreq: freq })
+    res.send({ highestFreq: controller.highestFreq })
 }
 
 module.exports = {

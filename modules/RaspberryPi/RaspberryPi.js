@@ -5,7 +5,7 @@ const pinout = require('../../config/pinout').coolerRaspPi
 const config = require('../../config/config').RASPBERRYPI
 const arduino = require('../Arduino').arduino
 const { motherboard } = require('../Motherboard/Motherboard')
-const { inRange } = require('../../Global/math')
+const { inRange } = require('../../global/math')
 const fs = require('fs')
 
 class RaspberryPi extends Module {

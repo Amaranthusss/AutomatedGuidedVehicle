@@ -87,15 +87,16 @@ const velocityChart = {
     };
 
     var myChart = new Chart(ctx, config)
-
+    let j = 0
     setInterval(function () {
       fetch('/getFreq').then(e => e.json()).then(obj => {
-        i++
-        config.data.labels.push(i)
+        j++
+        config.data.labels.push(j)
         config.data.datasets[0].data.push(obj.highestFreq)
+        console.log(obj.highestFreq, j)
         myChart.update();
       })
-    }, 3000)
+    }, 1000)
     return config.data
   },
   options: chart1_2_options,

@@ -69,7 +69,6 @@ class Axis extends Module {
         else {
             //Increase velocity of this axis about constant step
             this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeed ? freqI + 1 : freqI]
-            controller.highestFreq = this.velocity.freq //Information for displaying at frontend about the highest frequency
         }
         //Active acceleration or istant braking
         if (reCmd != undefined) { //Acceleration
@@ -85,8 +84,9 @@ class Axis extends Module {
             this.hardware.step.pwmFrequency(0)
             this.hardware.step.pwmWrite(0)
         }
-        let output = [this.velocity.speed, reCmd]
-        console.log(this.name, '[',
+        controller.highestFreq = this.velocity.freq //Information for displaying at frontend about the highest frequency
+        let output = [controller.highestFreq, reCmd]
+        /*console.log(this.name, '[',
             this.hardware.step.getPwmFrequency(), 'Hz ] [',
             //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
             this.velocity.speed, 'km/h ] [',
@@ -94,7 +94,7 @@ class Axis extends Module {
             this.hardware.en.digitalRead(), 'en ] [',
             this.hardware.dir.digitalRead(), 'dir ] [',
             reCmd, cmd, ' ]'
-        )
+        )*/
         return output
     }
 }
@@ -111,7 +111,6 @@ class Controller extends Module {
         this._getReady()
     }
     goForward() {
-        console.log('forward leci')
         const cmd = 'forward'
         this.history.push(this.leftFrontAxis.drive(cmd))
         this.leftRearAxis.drive(cmd)
@@ -176,5 +175,7 @@ class Controller extends Module {
     }
 }
 const controller = new Controller('Controller')
-
+setInterval(() => {
+    console.log(controller.history)
+}, 15000)
 module.exports = controller

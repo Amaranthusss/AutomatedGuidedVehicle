@@ -4,7 +4,7 @@ const KMeans = require('./kmeans')
 const Motor = require('./motor')
 const config = require('../../config/config').SCANNERS
 const { Module } = require('../Module')
-const { inRange } = require('../../Global/math')
+const { inRange } = require('../../global/math')
 
 class Scanner extends Module {
     constructor(...params) {

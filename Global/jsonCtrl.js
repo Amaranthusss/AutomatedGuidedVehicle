@@ -1,17 +1,10 @@
 const fs = require('fs')
 
 async function readFromFile(path, Module) {
-    let out = {}
-    if (fs.existsSync(path)) {
-        fs.readFile(path, (error, data) => {
-            if (error)
-                Module._message(`Function readFromFile() aborted at jsonCtrl object. ${error.message}.`)
-            out = JSON.parse(data)
-            console.log('***********Data read from:', path, '**************\n', out)
-        })
-    } else
-        Module._message(`File has not been found at ${path}. Function readFromFile() aborted at jsonCtrl object. ${error.message}.`)
-    return out
+    const fsPromises = require('fs').promises
+    const data = await fsPromises.readFile(path)
+        .catch((err) => Module._message(`Function readFromFile() aborted at jsonCtrl object. Probably file not found. ${error.message}.`))
+    return JSON.parse(data.toString())
 }
 
 async function writeToFile(path, data, Module) {

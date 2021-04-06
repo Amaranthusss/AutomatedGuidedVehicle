@@ -11,6 +11,7 @@
     "hbs": "^4.1.1",
     "https": "^1.0.0",
     "plotly-notebook-js": "^0.1.2",
+    "slayer": "^1.0.1",
     "socket.io": "^4.0.1",
     "ws": "^7.4.3"
   }

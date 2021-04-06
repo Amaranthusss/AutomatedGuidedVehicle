@@ -40,14 +40,14 @@ const SCANNERS = {
     DELAY_TO_START: 10000 //Time of delay to start scanning by scanners, time is started at arduino's ready status
 }
 const AXISES = {
-    FREQ_ARRAY: [320, 400, 500, 800, 1000, 1600, 2000, 4000, 8000], //10, 100, 200, 320, 400, 500, 800, 1000, 1600, 2000, 4000
+    FREQ_ARRAY: [0, 320, 400, 500, 800, 1000, 1600, 2000, 4000, 8000], //10, 100, 200, 320, 400, 500, 800, 1000, 1600, 2000, 4000
     PWM_LOW: 2, //Higher value of PWM should use more current but it is not required (PWM signals are based at edges)
     PWM_MEDIUM: 240,
     MEDIUM_PWM_FREQ_MIN: 1600,
     ENCODING_INTERVAL: 1, //Time at interval to read and compare state at encoders of each axis
     ENABLE: false, //Default false is enable, true is disable
     DIRECTION: false, //
-    ACCELERATION: 300, //Time at interval to get next level of PWM frequency for each axis
+    ACCELERATION: 1000, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
     HARDWARE_PUL_PER_REV: 1600, //Hardware configuration placed at stepper drivers at DIP pins
 }
