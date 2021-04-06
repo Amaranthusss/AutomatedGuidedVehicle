@@ -22,10 +22,21 @@ const controller = {
     ,
     _message: msg => { console.log(msg) },
     goForward: () => { console.log('jedzie do przodu') },
-    stop: () => { console.log('stop leci') }
+    stop: () => { console.log('stop leci') },
+    highestFreq: 10
 }
+const predkosci = [10, 100, 200, 700, 800, 0, 100, 300, 400, 0, 0, 100, 200, 400, 700, 900, 1000, 1200, 1500, 1600]
+var ktoraPredkosc = 0
+let interwalTestowy = setInterval(() => {
+    controller.highestFreq = predkosci[ktoraPredkosc]
+    ktoraPredkosc++
+    //console.log(controller.highestFreq, 'freq')
+    if (ktoraPredkosc > predkosci.length - 1)
+        clearInterval(interwalTestowy)
+}, 1000)
 const learning = {
     pathName: 'test',
+    readData: [],
     active: async (pathName) => {
         try {
             learning.pathName = pathName
@@ -36,10 +47,48 @@ const learning = {
     },
     _autoDrive: async () => {
         try {
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms))
+            }
+            async function print(cmd) {
+                controller._message(`Autodrive: step ${idx}/${learning.readData.length} at cmd ${cmd}`)
+            }
+            const asyncInterval = async (callback, ms) => {
+                return new Promise((resolve, reject) => {
+                    const interval = setInterval(async () => {
+                        if (await callback()) {
+                            clearInterval(interval)
+                            await sleep(1000)
+                            resolve()
+                        }
+                    }, ms)
+                })
+            }
+
             console.log('autodrive')
-            controller.history
+            let idx = 0
+            for await (el of learning.readData) {
+                idx++
+                await learning._cmdToFcn(el[1])
+                await print(el[1])
+                const condition = async () => { return controller.highestFreq >= el[0] }
+                await asyncInterval(condition, 100)
+            }
         }
         catch (error) { controller._message(`Function _autoDrive() aborted at learning object. ${error.message}.`) }
+    },
+    _cmdToFcn: async (cmd) => {
+        switch (cmd) {
+            case 'forward': controller.goForward(); break
+            case 'backward': controller.goBackward(); break
+            case 'goLeft': controller.goLeft(); break
+            case 'goRight': controller.goRight(); break
+            case 'turnLeft': controller.turnLeft(); break
+            case 'turnRight': controller.turnRight(); break
+            case 'reverseLeft': controller.reverseLeft(); break
+            case 'reverseRight': controller.reverseRight(); break
+            case 'stop': controller.stop(); break
+        }
     },
     save: async () => {
         try {
@@ -50,7 +99,8 @@ const learning = {
     },
     _read: async () => {
         try {
-            console.log(await readFromFile(config.FOLDER + learning.pathName + '.json', controller))
+            learning.readData = await readFromFile(config.FOLDER + learning.pathName + '.json', controller)
+            console.table(learning.readData)
         }
         catch (error) { controller._message(`Function _read() aborted at learning object. ${error.message}.`) }
     },
@@ -73,7 +123,6 @@ const learning = {
                 else startNamedIdx = idx //command with cmd name
             })
             controller.history = controller.history.filter((el) => el[1] !== '')
-            console.table(controller.history)
         }
         catch (error) { controller._message(`Function _optimaze() aborted at learning object. ${error.message}.`) }
     },
@@ -81,6 +130,7 @@ const learning = {
         return 7.2 * Math.PI * config.WHEELS_RADIUS / config.HARDWARE_PUL_PER_REV * v
     }
 }
-learning.save()
+//learning.save()
 //learning._read()
+learning.active('test')
 module.exports = learning

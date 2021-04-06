@@ -24,7 +24,8 @@ const MOTHERBOARD = {
     }
 }
 const LEARNING = {
-    FOLDER: './paths/'
+    FOLDER: './paths/',
+    FREQUENCY_TEST_INTERVAL: 1000
 }
 const SCANNERS = {
     MICROSECDONDS_PER_CM: 1e6 / 34321, //Estimated speed of sound [us/cm]
