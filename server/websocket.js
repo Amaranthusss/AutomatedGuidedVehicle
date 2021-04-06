@@ -1,8 +1,10 @@
-//___________ Libraries ___________
-const WebSocket = require('ws');
-//___________ Configuration ___________
+
+const WebSocket = require('wss')
 const port = require('../config/config').SERVER.ASYNC_PORT
-const wss = new WebSocket.Server({ port: port })
+const wss = WebSocket.createServer()
+const httpsCreateServer = require('https').createServer
+const https = httpsCreateServer()
+https.listen(port)
 
 /*
 wss.on('connection', function connection(ws) {

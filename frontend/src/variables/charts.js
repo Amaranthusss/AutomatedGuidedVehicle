@@ -1,6 +1,5 @@
 const client = require('../server/clientWebSocket')
 
-// chartExample1 and chartExample2 options
 const chart1_2_options = {
   maintainAspectRatio: false,
   legend: {
@@ -51,24 +50,24 @@ const chart1_2_options = {
   },
 };
 
-const chartExample1 = {
+const velocityChart = {
   data: (canvas) => {
     const ini = {
       x: [],
       y: []
     }
     let i = ini.x[ini.x.length - 1]
-    var ctx = canvas.getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    var ctx = canvas.getContext("2d")
+    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
+    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)")
+    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)")
+    gradientStroke.addColorStop(0, "rgba(29,140,248,0)")
     var config = {
       type: 'line',
       data: {
         labels: ini.x,
         datasets: [{
-          label: "My First dataset",
+          label: "Maximum frequency, Hz",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -87,15 +86,15 @@ const chartExample1 = {
       }
     };
 
-    var myChart = new Chart(ctx, config);
+    var myChart = new Chart(ctx, config)
 
     setInterval(function () {
-      /*fetch('/test').then(e => e.json()).then(obj => {
+      fetch('/getFreq').then(e => e.json()).then(obj => {
         i++
         config.data.labels.push(i)
-        config.data.datasets[0].data.push(obj.output.dist)
+        config.data.datasets[0].data.push(obj.highestFreq)
         myChart.update();
-      })*/
+      })
     }, 3000)
     return config.data
   },
@@ -105,10 +104,10 @@ const chartExample1 = {
 const chartExample2 = {
   data: (canvas) => {
     var ctx = canvas.getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
+    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)")
+    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)")
+    gradientStroke.addColorStop(0, "rgba(29,140,248,0)")
     var config = {
       type: 'line',
       data: {
@@ -153,10 +152,10 @@ const rearScannerChart = {
     }
     let i = ini.x[ini.x.length - 1]
     var ctx = canvas.getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
+    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)")
+    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)")
+    gradientStroke.addColorStop(0, "rgba(29,140,248,0)")
     var config = {
       type: 'line',
       data: {
@@ -190,7 +189,7 @@ const rearScannerChart = {
       dataWS = JSON.parse(message.data)
       config.data.labels.push(i)
       config.data.datasets[0].data.push(dataWS.output.dist)
-      myChart.update();
+      myChart.update()
     };
     return config.data
   },
@@ -285,7 +284,7 @@ const chartExample4 = {
 };
 
 module.exports = {
-  chartExample1,
+  velocityChart,
   chartExample2,
   rearScannerChart,
   chartExample4

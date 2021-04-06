@@ -3,7 +3,7 @@ import { Button } from 'reactstrap'
 import cmds from './commands'
 import { Mic } from 'react-bootstrap-icons'
 
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition
 
 class Controller extends React.Component {
     constructor(props) {

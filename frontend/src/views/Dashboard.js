@@ -47,7 +47,7 @@ import {
 
 // core components
 import {
-  chartExample1,
+  velocityChart,
   chartExample2,
   rearScannerChart,
   chartExample4,
@@ -160,8 +160,8 @@ function Dashboard(props) {
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={chartExample1.data}
-                    options={chartExample1.options}
+                    data={velocityChart.data}
+                    options={velocityChart.options}
                   />
                 </div>
               </CardBody>

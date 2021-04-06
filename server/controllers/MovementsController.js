@@ -1,8 +1,6 @@
 const { ACCELERATION } = require('../../config/config').AXISES
+var { controls, maxSpeed } = require('../../modules/Axises/controllerStates')
 const controller = require('../../modules/Axises/Axises')
-
-const controls = [false, false, false, false]
-const maxSpeed = false
 
 function getForwardCmd(req, res) {
     controls[0] = req.body.state

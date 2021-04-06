@@ -2,11 +2,10 @@ const { Module } = require('../Module')
 const pinout = require('../../config/pinout').axises
 const config = require('../../config/config').AXISES
 const arduino = require('../Arduino').arduino
-const { inRange } = require('../../Global/math')
 const { _cmdRead } = require('./commands')
 const { Pin } = require('johnny-five')
 const Gpio = require('pigpio').Gpio
-const maxSpeedCmd = require('../../server/controllers/MovementsController').maxSpeed
+const { maxSpeed } = require('./controllerStates')
 
 class Axis extends Module {
     constructor(...params) {
@@ -69,14 +68,15 @@ class Axis extends Module {
             this.velocity.freq = halfFreq
         else {
             //Increase velocity of this axis about constant step
-            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeedCmd ? freqI + 1 : freqI]
+            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeed ? freqI + 1 : freqI]
+            controller.highestFreq = this.velocity.freq //Information for displaying at frontend about the highest frequency
         }
         //Active acceleration or istant braking
         if (reCmd != undefined) { //Acceleration
-            if (this.hardware.step.getPwmFrequency() != this.velocity.freq)
-                this.hardware.step.pwmFrequency(this.velocity.freq)
+            //if (this.hardware.step.getPwmFrequency() != this.velocity.freq)  //TODO: ODKOMENTOWAC
+            //this.hardware.step.pwmFrequency(this.velocity.freq)  //TODO: ODKOMENTOWAC
             let pwm = this.hardware.step.getPwmFrequency() >= config.MEDIUM_PWM_FREQ_MIN ? config.PWM_MEDIUM : config.PWM_LOW
-            this.hardware.step.pwmWrite(pwm)
+            //this.hardware.step.pwmWrite(pwm) //TODO: ODKOMENTOWAC
             //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
             this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
                 / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
@@ -88,8 +88,9 @@ class Axis extends Module {
         let output = [this.velocity.speed, reCmd]
         console.log(this.name, '[',
             this.hardware.step.getPwmFrequency(), 'Hz ] [',
-            this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
+            //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
             this.velocity.speed, 'km/h ] [',
+            this.velocity.freq, 'Hz[set] ] [',
             this.hardware.en.digitalRead(), 'en ] [',
             this.hardware.dir.digitalRead(), 'dir ] [',
             reCmd, cmd, ' ]'
@@ -106,6 +107,8 @@ class Controller extends Module {
         this.rightFrontAxis = new Axis('Right Front', pinout.rightFront)
         this.rightRearAxis = new Axis('Right Rear', pinout.rightRear)
         this.history = []
+        this.highestFreq = 0
+        this._getReady()
     }
     goForward() {
         console.log('forward leci')
@@ -172,30 +175,6 @@ class Controller extends Module {
         this.rightRearAxis.drive()
     }
 }
-const controller = new Controller()
-/*
-let testIntervalForward, testIntervalBackward
-const t = 8000
-setTimeout(() => {
-    testIntervalForward = setInterval(() => {
-        controller.goForward()
-        console.log('------------------')
-    }, config.ACCELERATION)
-    console.log('ruszyl')
-    setTimeout(() => {
-        clearInterval(testIntervalForward)
-        controller.stop()
-        testIntervalBackward = setInterval(() => {
-            controller.goBackward()
-            console.log('------------------')
-        }, config.ACCELERATION)
-    }, t)
-    setTimeout(() => {
-        clearInterval(testIntervalBackward)
-        controller.stop()
-        console.log('zatrzymal sie')
-    }, t * 2 - config.ACCELERATION)
-}, 1000)*/
-
+const controller = new Controller('Controller')
 
 module.exports = controller
