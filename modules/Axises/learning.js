@@ -1,5 +1,5 @@
 const config = require('../../config/config').LEARNING
-const { readFromFile, writeToFile } = require("../../global/jsonCtrl")
+const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
 const { sleep } = require('../../global/math')
 const controller = require('./Axises')
 const learning = {
