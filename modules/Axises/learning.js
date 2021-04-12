@@ -1,42 +1,9 @@
 const config = require('../../config/config').LEARNING
 const { readFromFile, writeToFile } = require("../../global/jsonCtrl")
 const { sleep } = require('../../global/math')
-const controller = {
-    history:
-        [
-            [320, 'forward'],//0
-            [400, 'forward'],//1
-            [500, 'forward'],//2
-            [800, 'forward'],//3
-            [0, undefined],//4
-            [320, 'forward'],//5
-            [400, 'forward'],//6
-            [0, undefined],//7
-            [320, 'forward'],//8
-            [400, 'forward'],//9
-            [500, 'forward'],//10
-            [800, 'forward'],//11
-            [1000, 'forward'],//12
-            [1600, 'forward'],//13
-            [0, undefined]//14
-        ]
-    ,
-    _message: msg => { console.log(msg) },
-    goForward: () => { console.log('jedzie do przodu') },
-    stop: () => { console.log('stop leci') },
-    highestFreq: 10
-}
-const predkosci = [10, 100, 200, 700, 800, 0, 100, 300, 400, 0, 0, 100, 200, 400, 700, 900, 1000, 1200, 1500, 1600]
-var ktoraPredkosc = 0
-let interwalTestowy = setInterval(() => {
-    controller.highestFreq = predkosci[ktoraPredkosc]
-    ktoraPredkosc++
-    //console.log(controller.highestFreq, 'freq')
-    if (ktoraPredkosc > predkosci.length - 1)
-        clearInterval(interwalTestowy)
-}, 1000)
+const controller = require('./Axises')
 const learning = {
-    pathName: 'test',
+    pathName: 'empty',
     readData: [],
     active: async (pathName) => {
         try {
@@ -46,6 +13,7 @@ const learning = {
         }
         catch (error) { controller._message(`Function active() aborted at learning object. ${error.message}.`) }
     },
+    _resumeDrive: async () => { },
     _autoDrive: async () => {
         try {
             const asyncInterval = async (callback, ms) => {
@@ -123,7 +91,4 @@ const learning = {
         return 7.2 * Math.PI * config.WHEELS_RADIUS / config.HARDWARE_PUL_PER_REV * v
     }
 }
-//learning.save()
-//learning._read()
-learning.active('test')
 module.exports = learning
