@@ -5,6 +5,7 @@ const PagesController = require('../controllers/PagesController')
 const ScannerController = require('../controllers/ScannerController')
 const DisplayController = require('../controllers/DisplayController')
 const MovementsController = require('../controllers/MovementsController')
+const AutoDriver = require('../controllers/AutoDriver')
 
 router.get('/', PagesController.home)
 router.get('/frontScanner', ScannerController.sendToSite)
@@ -15,6 +16,9 @@ router.post('/downCmd', MovementsController.getBackwardCmd)
 router.post('/leftCmd', MovementsController.getLeftCmd)
 router.post('/rightCmd', MovementsController.getRightCmd)
 router.post('/maxSpeedCmd', MovementsController.getMaxSpeedCmd)
+router.post('/saveAutoDriver', AutoDriver.savePath)
+router.get('/showPathsAutoDriver', AutoDriver.showPathsList)
+router.post('/activeAutoDriver', AutoDriver.activePath)
 
 
 module.exports = router

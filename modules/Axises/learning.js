@@ -2,7 +2,8 @@ const config = require('../../config/config').LEARNING
 const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
 const { sleep } = require('../../global/math')
 const controller = require('./Axises')
-const learning = {
+const autoDriver = {
+    pathsList: [],
     pathName: 'empty',
     readData: [],
     active: async (pathName) => {
@@ -91,4 +92,5 @@ const learning = {
         return 7.2 * Math.PI * config.WHEELS_RADIUS / config.HARDWARE_PUL_PER_REV * v
     }
 }
-module.exports = learning
+//autoDriver.pathsList = 
+module.exports = autoDriver
