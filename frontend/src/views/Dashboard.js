@@ -4,6 +4,7 @@ import classNames from "classnames";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 import Controller from '../components/Controller/Controller'
+import AutoDriver from '../components/AutoDriver/AutoDriver'
 
 
 
@@ -170,19 +171,14 @@ function Dashboard(props) {
           <Col lg="4">
             <Card className="card-chart">
               <CardHeader>
-                <h5 className="card-category">Diagnostic</h5>
+                <h5 className="card-category">Movements</h5>
                 <CardTitle tag="h3">
                   <i className="tim-icons icon-delivery-fast text-primary" />{" "}
-                  Voltage
+                  Auto Driver
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                <div className="chart-area">
-                  <Bar
-                    data={chartExample4.data}
-                    options={chartExample4.options}
-                  />
-                </div>
+                <AutoDriver />
               </CardBody>
             </Card>
           </Col>
