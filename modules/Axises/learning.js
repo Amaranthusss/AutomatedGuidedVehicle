@@ -78,10 +78,10 @@ const autoDriver = {
         catch (error) { controller._message(`Function _read() aborted at autoDriver object (learning.js). ${error.message}.`) }
     },
     _optimaze: async () => {
-        try {
+        try { //ToDo: SPRAWDZIC CO JEST NIE TAK DLA POWTORZEN - PRZY 8K POWTORZONYM ODRZUCA - PRZEMYSLEC TO
             console.table(controller.history)
             controller.history = controller.history.map(el => [el[0], el[1] === undefined ? 'stop' : el[1]])
-            controller.history = controller.history.map(
+            controller.history = controller.history.map( //mark duplicates
                 (el, idx) => el = idx > 0 ?
                     [
                         el[0] === controller.history[idx - 1][0] ? 0 : el[0],
@@ -89,7 +89,7 @@ const autoDriver = {
                     ] : el
             )
             let startNamedIdx
-            controller.history.forEach((el, idx) => {
+            controller.history.forEach((el, idx) => { //remove marked duplicates
                 if (el[1] === '') { //duplicate cmd
                     removedFreq = el[0]
                     controller.history[startNamedIdx][0] = el[0]
