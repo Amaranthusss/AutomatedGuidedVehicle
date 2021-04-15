@@ -60,6 +60,6 @@ class RaspberryPi extends Module {
         this._message(`CPU temperature: ${this.temp}°C from the [temp] file. PWM: ${this.coolerPWM}, state: ${this.coolerState}`)
     }
 }
-
 raspberryPi = new RaspberryPi('Raspberry Pi', pinout)
+
 module.exports = { raspberryPi: raspberryPi }

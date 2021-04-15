@@ -35,7 +35,7 @@ class Motherboard extends Module {
         this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 60000)
         this.hardware.voltageSensor.on("change", () => {
             this.voltage = ((this.hardware.voltageSensor.value * VOLTAGE_SENSOR.ARDUNIO_REFERENCE / 1024)
-                / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE)).toFixed(2)
+                / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE) + VOLTAGE_SENSOR.VOLTAGE_OFFSET_CALIBRATION).toFixed(2)
         })
         this.hardware.currentSensor.on("change", () => {
             this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066).toFixed(4)
@@ -135,10 +135,9 @@ class Motherboard extends Module {
     }
     _cooling() {
         let cooling = Object.entries(this.coolerStates).find(el => el[1] == true)
-        if (cooling) this.hardware.cooler.analogWrite(pinout.cooler.pwm, 255)
+        if (cooling) this.hardware.cooler.analogWrite(pinout.cooler.pwm, 0) //ToDo: 255 here
         else this.hardware.cooler.analogWrite(pinout.cooler.pwm, 0)
     }
 }
-
 motherboard = new Motherboard('Motherboard', pinout)
 module.exports = { motherboard: motherboard }

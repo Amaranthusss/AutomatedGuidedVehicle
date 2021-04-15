@@ -19,6 +19,7 @@ router.post('/maxSpeedCmd', MovementsController.getMaxSpeedCmd)
 router.post('/saveAutoDriver', AutoDriver.savePath)
 router.get('/showPathsAutoDriver', AutoDriver.showPathsList)
 router.post('/activeAutoDriver', AutoDriver.activePath)
+router.post('/dropDataAutoDriver', AutoDriver.dropPathData)
 
 
 module.exports = router

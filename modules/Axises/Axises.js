@@ -71,16 +71,15 @@ class Axis extends Module {
             this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeed ? freqI + 1 : freqI]
         }
         //Active acceleration or istant braking
-        if (reCmd != undefined) { //Acceleration
-            //if (this.hardware.step.getPwmFrequency() != this.velocity.freq)  //TODO: ODKOMENTOWAC
-            //this.hardware.step.pwmFrequency(this.velocity.freq)  //TODO: ODKOMENTOWAC
+        if (reCmd !== undefined) { //Acceleration
+            if (this.hardware.step.getPwmFrequency() != this.velocity.freq)
+                this.hardware.step.pwmFrequency(this.velocity.freq)
             let pwm = this.hardware.step.getPwmFrequency() >= config.MEDIUM_PWM_FREQ_MIN ? config.PWM_MEDIUM : config.PWM_LOW
-            //this.hardware.step.pwmWrite(pwm) //TODO: ODKOMENTOWAC
-            //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
-            this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
-                / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+            this.hardware.step.pwmWrite(pwm)
+            this._freqToSpeed()
         } else { //Braking
             this.velocity.freq = config.FREQ_ARRAY[0]
+            this._freqToSpeed()
             this.hardware.step.pwmFrequency(0)
             this.hardware.step.pwmWrite(0)
         }
@@ -97,6 +96,11 @@ class Axis extends Module {
         )*/
         return output
     }
+    _freqToSpeed() {
+        //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
+        this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
+            / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+    }
 }
 
 class Controller extends Module {
@@ -110,72 +114,100 @@ class Controller extends Module {
         this.highestFreq = 0
         this._getReady()
     }
-    goForward() {
+    goForward(autoMode) {
         const cmd = 'forward'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    turnLeft() {
+    turnLeft(autoMode) {
         const cmd = 'turnLeft'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    turnRight() {
+    turnRight(autoMode) {
         const cmd = 'turnRight'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    goLeft() {
+    goLeft(autoMode) {
         const cmd = 'goLeft'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    goRight() {
+    goRight(autoMode) {
         const cmd = 'goRight'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    goBackward() {
+    goBackward(autoMode) {
         const cmd = 'backward'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    reverseLeft() {
+    reverseLeft(autoMode) {
         const cmd = 'reverseLeft'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    reverseRight() {
+    reverseRight(autoMode) {
         const cmd = 'reverseRight'
-        this.history.push(this.leftFrontAxis.drive(cmd))
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive(cmd))
+        else
+            this.leftFrontAxis.drive(cmd)
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
     }
-    stop() {
-        console.log('stop leci')
-        this.history.push(this.leftFrontAxis.drive())
+    stop(autoMode) {
+        if (autoMode !== true)
+            this.history.push(this.leftFrontAxis.drive())
+        else
+            this.leftFrontAxis.drive()
         this.leftRearAxis.drive()
         this.rightFrontAxis.drive()
         this.rightRearAxis.drive()
     }
+    async pathHasBeenSaved() {
+        this.history = []
+        this._message(`Path has been saved.`)
+    }
 }
 const controller = new Controller('Controller')
-setInterval(() => {
-    console.log(controller.history)
-}, 15000)
+
 module.exports = controller

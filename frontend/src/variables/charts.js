@@ -90,13 +90,14 @@ const velocityChart = {
     let j = 0
     setInterval(function () {
       fetch('/getFreq').then(e => e.json()).then(obj => {
-        j++
-        config.data.labels.push(j)
+        j += 0.1
+        let o = j.toFixed(1)
+        config.data.labels.push(o)
         config.data.datasets[0].data.push(obj.highestFreq)
-        console.log(obj.highestFreq, j)
+        //console.log(obj.highestFreq, j)
         myChart.update();
       })
-    }, 1000)
+    }, 100)
     return config.data
   },
   options: chart1_2_options,
@@ -186,7 +187,7 @@ const rearScannerChart = {
     dataWS = null
     client.onmessage = (message) => {
       i++
-      console.log(message.data)
+      //console.log(message.data)
       dataWS = JSON.parse(message.data)
       config.data.labels.push(i)
       config.data.datasets[0].data.push(dataWS.output.dist)

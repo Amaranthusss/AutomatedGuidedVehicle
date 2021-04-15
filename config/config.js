@@ -1,3 +1,4 @@
+const path = require('path')
 const SERVER = {
     PORT: 8080, //Port of server with frontend - website (Express)
     ASYNC_PORT: 8081 //Port of asynchronous server communicate with frontend (WebSocket)
@@ -20,11 +21,12 @@ const MOTHERBOARD = {
         ARDUNIO_REFERENCE: 5.015, //measured voltage at arduino output pin
         LOWER_RESISTANCE: 11000, //measured resistance of lower resistor
         HIGHER_RESISTANCE: 33000, //measured resistance of higher resistor
-        LOW_VOLTAGE_LEVEL: 11.5 //value to detect low level energy power at accumulators
+        LOW_VOLTAGE_LEVEL: 11.5, //value to detect low level energy power at accumulators
+        VOLTAGE_OFFSET_CALIBRATION: 12.80 - 12.39 //offset due voltage drop at agv at idle mode
     }
 }
 const LEARNING = {
-    FOLDER: './paths/',
+    FOLDER: path.join(__dirname, '../', 'paths'),
     FREQUENCY_TEST_INTERVAL: 1000
 }
 const SCANNERS = {

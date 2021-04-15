@@ -1,18 +1,26 @@
 const config = require('../../config/config').LEARNING
+const { ACCELERATION } = require('../../config/config').AXISES
 const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
 const { sleep } = require('../../global/math')
 const controller = require('./Axises')
 const autoDriver = {
-    pathsList: [],
-    pathName: 'empty',
     readData: [],
-    active: async (pathName) => {
+    interval: null,
+    active: async pathName => {
         try {
-            learning.pathName = pathName
-            await learning._read()
-            await learning._autoDrive()
+            await autoDriver._read(pathName)
+            await autoDriver._autoDrive()
+            clearInterval(autoDriver.interval)
         }
-        catch (error) { controller._message(`Function active() aborted at learning object. ${error.message}.`) }
+        catch (error) { controller._message(`Function active() aborted at autoDriver object (learning.js). ${error.message}.`) }
+    },
+    save: async pathName => {
+        try {
+            await autoDriver._optimaze()
+            await writeToFile(config.FOLDER + '/' + pathName + '.json', controller.history, controller)
+            await controller.pathHasBeenSaved()
+        }
+        catch (error) { controller._message(`Function save() aborted at autoDriver object (learning.js). ${error.message}.`) }
     },
     _resumeDrive: async () => { },
     _autoDrive: async () => {
@@ -22,57 +30,61 @@ const autoDriver = {
                     const interval = setInterval(async () => {
                         if (await callback()) {
                             clearInterval(interval)
-                            await sleep(1000)
+                            await sleep(100)
                             resolve()
                         }
                     }, ms)
                 })
             }
             let idx = 0
-            for await (el of learning.readData) {
+            for await (el of autoDriver.readData) {
                 idx++
-                await learning._cmdToFcn(el[1])
-                controller._message(`Autodrive: step ${idx}/${learning.readData.length} at cmd ${el[1]}`)
+                controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${el[1]}`)
+                await autoDriver._cmdToFcn(el[1])
                 const condition = async () => { return controller.highestFreq >= el[0] }
-                await asyncInterval(condition, 100)
+                const conditionStop = async () => { return controller.highestFreq === el[0] }
+                if (el[1] === 'stop')
+                    await asyncInterval(conditionStop, 100)
+                else
+                    await asyncInterval(condition, 100)
             }
         }
-        catch (error) { controller._message(`Function _autoDrive() aborted at learning object. ${error.message}.`) }
+        catch (error) { controller._message(`Function _autoDrive() aborted at autoDriver object (learning.js). ${error.message}.`) }
     },
     _cmdToFcn: async (cmd) => {
-        switch (cmd) {
-            case 'forward': controller.goForward(); break
-            case 'backward': controller.goBackward(); break
-            case 'goLeft': controller.goLeft(); break
-            case 'goRight': controller.goRight(); break
-            case 'turnLeft': controller.turnLeft(); break
-            case 'turnRight': controller.turnRight(); break
-            case 'reverseLeft': controller.reverseLeft(); break
-            case 'reverseRight': controller.reverseRight(); break
-            case 'stop': controller.stop(); break
-        }
+        clearInterval(autoDriver.interval)
+        autoDriver.interval = setInterval(() => {
+            function callCmdFcn() {
+                switch (cmd) {
+                    case 'forward': return controller.goForward(true)
+                    case 'backward': return controller.goBackward(true)
+                    case 'goLeft': return controller.goLeft(true)
+                    case 'goRight': return controller.goRight(true)
+                    case 'turnLeft': return controller.turnLeft(true)
+                    case 'turnRight': return controller.turnRight(true)
+                    case 'reverseLeft': return controller.reverseLeft(true)
+                    case 'reverseRight': return controller.reverseRight(true)
+                    default: return controller.stop(true)
+                }
+            }
+            callCmdFcn()
+        }, ACCELERATION)
     },
-    save: async () => {
+    _read: async pathName => {
         try {
-            await learning._optimaze()
-            await writeToFile(config.FOLDER + learning.pathName + '.json', controller.history, controller)
+            autoDriver.readData = await readFromFile(config.FOLDER + '/' + pathName, controller)
+            console.table(autoDriver.readData)
         }
-        catch (error) { controller._message(`Function save() aborted at learning object. ${error.message}.`) }
-    },
-    _read: async () => {
-        try {
-            learning.readData = await readFromFile(config.FOLDER + learning.pathName + '.json', controller)
-            console.table(learning.readData)
-        }
-        catch (error) { controller._message(`Function _read() aborted at learning object. ${error.message}.`) }
+        catch (error) { controller._message(`Function _read() aborted at autoDriver object (learning.js). ${error.message}.`) }
     },
     _optimaze: async () => {
         try {
+            console.table(controller.history)
             controller.history = controller.history.map(el => [el[0], el[1] === undefined ? 'stop' : el[1]])
             controller.history = controller.history.map(
                 (el, idx) => el = idx > 0 ?
                     [
-                        el[0] === controller.history[idx - 1][0] ? '' : el[0],
+                        el[0] === controller.history[idx - 1][0] ? 0 : el[0],
                         el[1] === controller.history[idx - 1][1] ? '' : el[1]
                     ] : el
             )
@@ -85,6 +97,7 @@ const autoDriver = {
                 else startNamedIdx = idx //command with cmd name
             })
             controller.history = controller.history.filter((el) => el[1] !== '')
+            console.table(controller.history)
         }
         catch (error) { controller._message(`Function _optimaze() aborted at learning object. ${error.message}.`) }
     },
@@ -92,5 +105,5 @@ const autoDriver = {
         return 7.2 * Math.PI * config.WHEELS_RADIUS / config.HARDWARE_PUL_PER_REV * v
     }
 }
-//autoDriver.pathsList = 
+
 module.exports = autoDriver
