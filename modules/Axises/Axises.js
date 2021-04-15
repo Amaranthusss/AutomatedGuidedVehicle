@@ -52,7 +52,7 @@ class Axis extends Module {
     }
     drive(cmd) {
         //If velocity is too low for torsions turn off slower motors
-        let reCmd = cmd
+        let reCmd = cmd === null ? undefined : cmd
         let freqI = config.FREQ_ARRAY.findIndex(el => el == this.velocity.freq)
         let halfFreq = config.FREQ_ARRAY[Math.floor(freqI / 2)]
         if (this.velocity.freq < halfFreq)

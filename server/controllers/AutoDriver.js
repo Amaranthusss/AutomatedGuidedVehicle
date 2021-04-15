@@ -20,7 +20,7 @@ function activePath(req, res) {
 }
 function dropPathData(req, res) {
     controller.history = []
-    controller._message('Data about current path has been droped.')
+    controller._message(`Data about current path has been droped. Current history data: ${controller.history}`)
     res.end('Post done')
 }
 
