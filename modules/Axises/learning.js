@@ -3,6 +3,8 @@ const { ACCELERATION } = require('../../config/config').AXISES
 const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
 const { sleep } = require('../../global/math')
 const controller = require('./Axises')
+const { states } = require('./controllerStates')
+
 const autoDriver = {
     readData: [],
     interval: null,
@@ -16,7 +18,8 @@ const autoDriver = {
     },
     save: async pathName => {
         try {
-            await autoDriver._optimaze()
+            await autoDriver._check()
+            //await autoDriver._optimaze()
             await writeToFile(config.FOLDER + '/' + pathName + '.json', controller.history, controller)
             await controller.pathHasBeenSaved()
         }
@@ -38,6 +41,7 @@ const autoDriver = {
             }
             let idx = 0
             for await (el of autoDriver.readData) {
+                states.maxSpeed = false //enable maximum velocity - unlimited
                 idx++
                 controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${el[1]}`)
                 await autoDriver._cmdToFcn(el[1])
@@ -77,10 +81,15 @@ const autoDriver = {
         }
         catch (error) { controller._message(`Function _read() aborted at autoDriver object (learning.js). ${error.message}.`) }
     },
+    _check: async () => {
+        try {
+            controller.history = controller.history.map(el => [el[0], el[1] === undefined ? 'stop' : el[1]])
+        }
+        catch (error) { controller._message(`Function _check() aborted at learning object. ${error.message}.`) }
+    },
     _optimaze: async () => {
         try { //ToDo: SPRAWDZIC CO JEST NIE TAK DLA POWTORZEN - PRZY 8K POWTORZONYM ODRZUCA - PRZEMYSLEC TO
             console.table(controller.history)
-            controller.history = controller.history.map(el => [el[0], el[1] === undefined ? 'stop' : el[1]])
             controller.history = controller.history.map( //mark duplicates
                 (el, idx) => el = idx > 0 ?
                     [
