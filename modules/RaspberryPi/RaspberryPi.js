@@ -54,6 +54,7 @@ class RaspberryPi extends Module {
             this.coolerPWM = 0
             this.hardware.cooler.analogWrite(pinout.pwm, 0)
         }
+        this.coolerInfo()
 
     }
     coolerInfo() {

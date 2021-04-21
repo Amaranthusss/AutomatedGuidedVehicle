@@ -28,13 +28,13 @@ class Motherboard extends Module {
         this.temperature = 0
         this.alarmDiodeStates = { lowVoltage: false }
         this.coolerStates = { raspiFan: false }
-        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 250)
+        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 60000)
         this.hardware.voltageSensor.on("change", () => {
             this.voltage = ((this.hardware.voltageSensor.value * VOLTAGE_SENSOR.ARDUNIO_REFERENCE / 1024)
                 / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE) + VOLTAGE_SENSOR.VOLTAGE_OFFSET_CALIBRATION).toFixed(2)
         })
         this.hardware.currentSensor.on("change", () => {
-            this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066).toFixed(4)
+            this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066 - 22.772).toFixed(4)
             //this.current = this.hardware.currentSensor.fscaleTo(0, 30)
         })
         this.voltageHistory = []
@@ -57,7 +57,7 @@ class Motherboard extends Module {
         let errorText = ''
         if (this.alarmDiodeStates.lowVoltage === true)
             errorText = `ERROR: Voltage lower than ${VOLTAGE_SENSOR.LOW_VOLTAGE_LEVEL}V! `
-        //this._message(`${errorText}Voltage: ${this.voltage}V`)
+        this._message(`${errorText}Voltage: ${this.voltage}V`)
         this._alarmDiode()
         this.getCurrent()
         this.voltageHistory.push(this.voltage)
@@ -72,7 +72,7 @@ class Motherboard extends Module {
         return this.alarmDiodeStates
     }
     getCurrent() {
-        //this._message(`Current: ${this.current}A`)
+        this._message(`Current: ${this.current}A`)
         return this.current
     }
     setCooler(name, lvl) {
@@ -81,7 +81,7 @@ class Motherboard extends Module {
     }
     _cooling() {
         let cooling = Object.entries(this.coolerStates).find(el => el[1] == true)
-        if (cooling) this.hardware.cooler.analogWrite(pinout.cooler.pwm, 0) //ToDo: 255 here
+        if (cooling) this.hardware.cooler.analogWrite(pinout.cooler.pwm, 255) //ToDo: 255 here
         else this.hardware.cooler.analogWrite(pinout.cooler.pwm, 0)
     }
 }
