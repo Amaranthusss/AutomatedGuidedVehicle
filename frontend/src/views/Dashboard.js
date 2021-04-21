@@ -47,12 +47,7 @@ import {
 } from "reactstrap";
 
 // core components
-import {
-  velocityChart,
-  chartExample2,
-  rearScannerChart,
-  chartExample4,
-} from "variables/charts.js";
+import charts from "variables/charts.js"
 
 
 
@@ -140,8 +135,8 @@ function Dashboard(props) {
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={chartExample4.data}
-                    options={chartExample4.options}
+                    data={charts.chartExample4.data}
+                    options={charts.chartExample4.options}
                   />
                 </div>
               </CardBody>
@@ -161,8 +156,8 @@ function Dashboard(props) {
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={velocityChart.data}
-                    options={velocityChart.options}
+                    data={charts.velocityChart.data}
+                    options={charts.velocityChart.options}
                   />
                 </div>
               </CardBody>
@@ -194,8 +189,8 @@ function Dashboard(props) {
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={rearScannerChart.data}
-                    options={rearScannerChart.options}
+                    data={charts.rearScannerChart.data}
+                    options={charts.rearScannerChart.options}
                   />
                 </div>
               </CardBody>

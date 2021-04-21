@@ -1,4 +1,5 @@
-const client = require('../server/clientWebSocket')
+import axios from 'axios'
+// import client from '../server/clientWebSocket'
 
 const chart1_2_options = {
   maintainAspectRatio: false,
@@ -88,16 +89,16 @@ const velocityChart = {
 
     var myChart = new Chart(ctx, config)
     let j = 0
-    setInterval(function () {
-      fetch('/getFreq').then(e => e.json()).then(obj => {
-        j += 0.75
+    setInterval(() => {
+      axios.get('/getFreq').then(res => {
+        let obj = res.data
+        j += 0.1
         let o = j.toFixed(1)
         config.data.labels.push(o)
         config.data.datasets[0].data.push(obj.highestFreq)
-        //console.log(obj.highestFreq, j)
-        myChart.update();
+        myChart.update()
       })
-    }, 750)
+    }, 100)
     return config.data
   },
   options: chart1_2_options,
@@ -184,15 +185,15 @@ const rearScannerChart = {
 
     var myChart = new Chart(ctx, config);
 
-    dataWS = null
-    client.onmessage = (message) => {
-      i++
-      //console.log(message.data)
-      dataWS = JSON.parse(message.data)
-      config.data.labels.push(i)
-      config.data.datasets[0].data.push(dataWS.output.dist)
-      myChart.update()
-    };
+    // dataWS = null
+    // client.onmessage = (message) => {
+    //   i++
+    //   //console.log(message.data)
+    //   dataWS = JSON.parse(message.data)
+    //   config.data.labels.push(i)
+    //   config.data.datasets[0].data.push(dataWS.output.dist)
+    //   myChart.update()
+    // };
     return config.data
   },
   options: chart1_2_options,
@@ -285,9 +286,9 @@ const chartExample4 = {
   },
 };
 
-module.exports = {
-  velocityChart,
-  chartExample2,
-  rearScannerChart,
-  chartExample4
-};
+export default {
+  velocityChart: velocityChart,
+  chartExample2: chartExample2,
+  rearScannerChart: rearScannerChart,
+  chartExample4: chartExample4
+}
