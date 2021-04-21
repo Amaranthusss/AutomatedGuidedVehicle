@@ -1,5 +1,5 @@
 const config = require('../../config/config').LEARNING
-const { ACCELERATION } = require('../../config/config').AXISES
+const { ACCELERATION, FREQ_ARRAY } = require('../../config/config').AXISES
 const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
 const { sleep } = require('../../global/math')
 const controller = require('./Axises')
@@ -42,9 +42,18 @@ const autoDriver = {
             let idx = 0
             for await (el of autoDriver.readData) {
                 states.maxSpeed = false //enable maximum velocity - unlimited
+                if (controller.highestFreq === el[0]) {
+                    let prevIdx = FREQ_ARRAY.findIndex(elFreqArray => elFreqArray == el[0]) - 1
+                    console.log('el[0]', el[0], '| highestFreq', controller.highestFreq, '| prevIdx', prevIdx)
+                    controller.leftFrontAxis.velocity.freq = FREQ_ARRAY[prevIdx]
+                    controller.leftRearAxis.velocity.freq = FREQ_ARRAY[prevIdx]
+                    controller.rightFrontAxis.velocity.freq = FREQ_ARRAY[prevIdx]
+                    controller.rightRearAxis.velocity.freq = FREQ_ARRAY[prevIdx]
+                }
                 idx++
-                controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${el[1]}`)
+                controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${el[1]} with ${el[0]} and next should be ${controller.highestFreq}`)
                 await autoDriver._cmdToFcn(el[1])
+                await sleep(ACCELERATION)
                 const condition = async () => { return controller.highestFreq >= el[0] }
                 const conditionStop = async () => { return controller.highestFreq === el[0] }
                 if (el[1] === 'stop')

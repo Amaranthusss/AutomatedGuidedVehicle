@@ -57,7 +57,7 @@ class Motherboard extends Module {
         let errorText = ''
         if (this.alarmDiodeStates.lowVoltage === true)
             errorText = `ERROR: Voltage lower than ${VOLTAGE_SENSOR.LOW_VOLTAGE_LEVEL}V! `
-        this._message(`${errorText}Voltage: ${this.voltage}V`)
+        //this._message(`${errorText}Voltage: ${this.voltage}V`)
         this._alarmDiode()
         this.getCurrent()
         this.voltageHistory.push(this.voltage)
@@ -72,7 +72,7 @@ class Motherboard extends Module {
         return this.alarmDiodeStates
     }
     getCurrent() {
-        this._message(`Current: ${this.current}A`)
+        //this._message(`Current: ${this.current}A`)
         return this.current
     }
     setCooler(name, lvl) {
