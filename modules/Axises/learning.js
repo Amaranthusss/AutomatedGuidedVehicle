@@ -19,7 +19,7 @@ const autoDriver = {
     save: async pathName => {
         try {
             await autoDriver._check()
-            //await autoDriver._optimaze()
+            await autoDriver._optimaze()
             await writeToFile(config.FOLDER + '/' + pathName + '.json', controller.history, controller)
             await controller.pathHasBeenSaved()
         }
@@ -44,7 +44,7 @@ const autoDriver = {
                 states.maxSpeed = false //enable maximum velocity - unlimited
                 if (controller.highestFreq === el[0]) {
                     let prevIdx = FREQ_ARRAY.findIndex(elFreqArray => elFreqArray == el[0]) - 1
-                    console.log('el[0]', el[0], '| highestFreq', controller.highestFreq, '| prevIdx', prevIdx)
+                    //console.log('el[0]', el[0], '| highestFreq', controller.highestFreq, '| prevIdx', prevIdx)
                     controller.leftFrontAxis.velocity.freq = FREQ_ARRAY[prevIdx]
                     controller.leftRearAxis.velocity.freq = FREQ_ARRAY[prevIdx]
                     controller.rightFrontAxis.velocity.freq = FREQ_ARRAY[prevIdx]
@@ -97,24 +97,37 @@ const autoDriver = {
         catch (error) { controller._message(`Function _check() aborted at learning object. ${error.message}.`) }
     },
     _optimaze: async () => {
-        try { //ToDo: SPRAWDZIC CO JEST NIE TAK DLA POWTORZEN - PRZY 8K POWTORZONYM ODRZUCA - PRZEMYSLEC TO
+        try {
             console.table(controller.history)
-            controller.history = controller.history.map( //mark duplicates
-                (el, idx) => el = idx > 0 ?
-                    [
-                        el[0] === controller.history[idx - 1][0] ? 0 : el[0],
-                        el[1] === controller.history[idx - 1][1] ? '' : el[1]
-                    ] : el
-            )
-            let startNamedIdx
-            controller.history.forEach((el, idx) => { //remove marked duplicates
-                if (el[1] === '') { //duplicate cmd
-                    removedFreq = el[0]
-                    controller.history[startNamedIdx][0] = el[0]
+            let lastCmd = ''
+            let startIdx = 0
+            let toRemoveIds = []
+            controller.history.forEach((el, idx) => {
+                if (idx > 0) {
+                    if (el[1] !== lastCmd) {
+                        controller.history[startIdx][0] = controller.history[idx - 1][0]
+                        startIdx = idx
+                    }
+                    if (el[0] !== controller.history[idx - 1][0]) {
+                        toRemoveIds.push([startIdx + 1, idx - 1])
+                    }
                 }
-                else startNamedIdx = idx //command with cmd name
+                lastCmd = el[1]
             })
-            controller.history = controller.history.filter((el) => el[1] !== '')
+            toRemoveIds.forEach((el, idx) => {
+                if (idx > 0 && el[0] === toRemoveIds[idx - 1][0] && el[1] >= toRemoveIds[idx - 1][1]) {
+                    toRemoveIds[idx - 1][0] = ''
+                    toRemoveIds[idx - 1][1] = ''
+                }
+            })
+            toRemoveIds.forEach((el, idx) => {
+                if (el[0] > el[1]) {
+                    toRemoveIds[idx][0] = ''
+                    toRemoveIds[idx][1] = ''
+                }
+            })
+            toRemoveIds = toRemoveIds.filter((el) => el[1] !== '')
+            for (let i = toRemoveIds.length - 1; i >= 0; i--) controller.history.splice(toRemoveIds[i][0], toRemoveIds[i][1] - toRemoveIds[i][0] + 1)
             console.table(controller.history)
         }
         catch (error) { controller._message(`Function _optimaze() aborted at learning object. ${error.message}.`) }
