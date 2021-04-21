@@ -13,6 +13,7 @@ const RASPBERRYPI = {
 }
 const MOTHERBOARD = {
     CURRENT_SENSOR: {
+        CALIBRATION: 22.722, //offset at current value
         SENSITIVITY: 66, //mV/A
         ARDUINO_VOLTAGE: 5000, //mV
         OFFSET_FOR_ZERO_CURRENT: 2500 //mV

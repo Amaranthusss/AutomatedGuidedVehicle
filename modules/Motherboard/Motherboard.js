@@ -1,6 +1,6 @@
 const { Module } = require('../Module')
 const pinout = require('../../config/pinout').motherboard
-const { VOLTAGE_SENSOR } = require('../../config/config').MOTHERBOARD
+const { VOLTAGE_SENSOR, CURRENT_SENSOR } = require('../../config/config').MOTHERBOARD
 const { Led, Sensor, Pin } = require('johnny-five')
 const arduino = require('../Arduino').arduino
 const controller = require('../Axises/Axises')
@@ -34,20 +34,20 @@ class Motherboard extends Module {
                 / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE) + VOLTAGE_SENSOR.VOLTAGE_OFFSET_CALIBRATION).toFixed(2)
         })
         this.hardware.currentSensor.on("change", () => {
-            this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066 - 22.772).toFixed(4)
+            this.current = ((this.hardware.currentSensor.value * 5 / 1023 - 2.5) / 0.066 - CURRENT_SENSOR.CALIBRATION).toFixed(4)
             //this.current = this.hardware.currentSensor.fscaleTo(0, 30)
         })
         this.voltageHistory = []
         this.currentHistory = []
         this.frequencyHistory = []
         setTimeout(() => {
-            writeToFile(FOLDER + '/history.json', 
-            {
-                voltage: this.voltageHistory,
-                current: this.currentHistory,
-                frequency: this.frequencyHistory,
-            }
-            , this)
+            writeToFile(FOLDER + '/history.json',
+                {
+                    voltage: this.voltageHistory,
+                    current: this.currentHistory,
+                    frequency: this.frequencyHistory,
+                }
+                , this)
             this._message('History has been wroten.')
         }, 120000);
         this._getReady()
