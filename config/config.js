@@ -29,6 +29,9 @@ const LEARNING = {
     FOLDER: path.join(__dirname, '../', 'paths'),
     FREQUENCY_TEST_INTERVAL: 1000
 }
+const RESEARCH = {
+    FOLDER: path.join(__dirname, '../', 'research'),
+}
 const SCANNERS = {
     MICROSECDONDS_PER_CM: 1e6 / 34321, //Estimated speed of sound [us/cm]
     SENSOR_MAX_RANGE: 300, //Maximum range of distance sensor -> digital low pass filter
@@ -70,5 +73,6 @@ module.exports = {
     AXISES,
     LEARNING,
     SCANNERS,
-    LIGHTING
+    LIGHTING,
+    RESEARCH
 }

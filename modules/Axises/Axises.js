@@ -211,5 +211,9 @@ class Controller extends Module {
     }
 }
 const controller = new Controller('Controller')
+setTimeout(() => {
+    controller.goForward()
+}, 10000)
+
 
 module.exports = controller

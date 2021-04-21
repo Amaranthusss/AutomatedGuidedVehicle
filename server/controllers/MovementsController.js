@@ -23,7 +23,7 @@ function getRightCmd(req, res) {
     res.end('Post done')
 }
 function getMaxSpeedCmd(req, res) {
-    states.maxSpeed = req.body.state
+    states.maxSpeed = !req.body.state
     res.end('Post done')
 }
 function getStopAcceleratingCmd(req, res) {
