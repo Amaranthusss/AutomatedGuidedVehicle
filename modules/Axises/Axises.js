@@ -5,7 +5,7 @@ const arduino = require('../Arduino').arduino
 const { _cmdRead } = require('./commands')
 const { Pin } = require('johnny-five')
 const Gpio = require('pigpio').Gpio
-const { maxSpeed } = require('./controllerStates')
+const { states } = require('./controllerStates')
 
 class Axis extends Module {
     constructor(...params) {
@@ -68,7 +68,8 @@ class Axis extends Module {
             this.velocity.freq = halfFreq
         else {
             //Increase velocity of this axis about constant step
-            this.velocity.freq = config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - maxSpeed ? freqI + 1 : freqI]
+            this.velocity.freq = states.stopAccelerating !== false ? config.FREQ_ARRAY[freqI] :
+                config.FREQ_ARRAY[freqI < config.FREQ_ARRAY.length - 1 - states.maxSpeed ? freqI + 1 : freqI]
         }
         //Active acceleration or istant braking
         if (reCmd !== undefined) { //Acceleration
@@ -85,15 +86,16 @@ class Axis extends Module {
         }
         controller.highestFreq = this.velocity.freq //Information for displaying at frontend about the highest frequency
         let output = [controller.highestFreq, reCmd]
-        /*console.log(this.name, '[',
-            this.hardware.step.getPwmFrequency(), 'Hz ] [',
-            //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
-            this.velocity.speed, 'km/h ] [',
-            this.velocity.freq, 'Hz[set] ] [',
-            this.hardware.en.digitalRead(), 'en ] [',
-            this.hardware.dir.digitalRead(), 'dir ] [',
-            reCmd, cmd, ' ]'
-        )*/
+        // console.log(this.name, '[',
+        //     this.hardware.step.getPwmFrequency(), 'Hz ] [',
+        //     //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
+        //     this.velocity.speed, 'km/h ] [',
+        //     this.velocity.freq, 'Hz[set] ] [',
+        //     this.hardware.en.digitalRead(), 'en ] [',
+        //     this.hardware.dir.digitalRead(), 'dir ] [',
+        //     states.stopAccelerating, 'stopAcce ] [',
+        //     reCmd, cmd, ' ]'
+        // )
         return output
     }
     _freqToSpeed() {

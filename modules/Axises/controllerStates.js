@@ -1,4 +1,4 @@
 const controls = [false, false, false, false]
-var maxSpeed = false
+const states = { maxSpeed: false, stopAccelerating: false }
 
-module.exports = { controls, maxSpeed }
+module.exports = { controls, states }
