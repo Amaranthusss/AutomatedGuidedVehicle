@@ -21,9 +21,13 @@ function range(start, stop) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
+function equalsArray(a, b) {
+    a.length === b.length && a.every((v, i) => v === b[i])
+}
 module.exports = {
     inRange: inRange,
     hexToRgb: hexToRgb,
     range: range,
-    sleep: sleep
+    sleep: sleep,
+    equalsArray: equalsArray
 }

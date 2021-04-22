@@ -1,7 +1,7 @@
 const config = require('../../config/config').LEARNING
 const { ACCELERATION, FREQ_ARRAY } = require('../../config/config').AXISES
 const { readFromFile, writeToFile } = require('../../global/jsonCtrl')
-const { sleep } = require('../../global/math')
+const { sleep, equalsArray } = require('../../global/math')
 const controller = require('./Axises')
 const { states } = require('./controllerStates')
 
@@ -41,9 +41,12 @@ const autoDriver = {
             }
             let idx = 0
             for await (el of autoDriver.readData) {
+                let lastFreq, lastCmd
+                if (lastFreq !== '') lastFreq = el[0]
+                if (lastCmd !== '') lastCmd = el[1]
                 states.maxSpeed = false //enable maximum velocity - unlimited
-                if (controller.highestFreq === el[0]) {
-                    let prevIdx = FREQ_ARRAY.findIndex(elFreqArray => elFreqArray == el[0]) - 1
+                if (controller.highestFreq === lastFreq) { //duplicate, set velocity at idx-1
+                    let prevIdx = FREQ_ARRAY.findIndex(elFreqArray => elFreqArray == lastFreq) - 1
                     //console.log('el[0]', el[0], '| highestFreq', controller.highestFreq, '| prevIdx', prevIdx)
                     controller.leftFrontAxis.velocity.freq = FREQ_ARRAY[prevIdx]
                     controller.leftRearAxis.velocity.freq = FREQ_ARRAY[prevIdx]
@@ -51,12 +54,12 @@ const autoDriver = {
                     controller.rightRearAxis.velocity.freq = FREQ_ARRAY[prevIdx]
                 }
                 idx++
-                controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${el[1]} with ${el[0]} and next should be ${controller.highestFreq}`)
-                await autoDriver._cmdToFcn(el[1])
+                controller._message(`Autodrive: step ${idx}/${autoDriver.readData.length} at cmd ${lastCmd} with ${lastFreq} and next should be ${controller.highestFreq}`)
+                await autoDriver._cmdToFcn(lastCmd)
                 await sleep(ACCELERATION)
-                const condition = async () => { return controller.highestFreq >= el[0] }
-                const conditionStop = async () => { return controller.highestFreq === el[0] }
-                if (el[1] === 'stop')
+                const condition = async () => { return controller.highestFreq >= lastFreq }
+                const conditionStop = async () => { return controller.highestFreq === lastFreq }
+                if (lastCmd === 'stop')
                     await asyncInterval(conditionStop, 100)
                 else
                     await asyncInterval(condition, 100)
@@ -128,6 +131,7 @@ const autoDriver = {
             })
             toRemoveIds = toRemoveIds.filter((el) => el[1] !== '')
             for (let i = toRemoveIds.length - 1; i >= 0; i--) controller.history.splice(toRemoveIds[i][0], toRemoveIds[i][1] - toRemoveIds[i][0] + 1)
+            controller.history = controller.history.map((el, idx) => idx > 0 ? equalsArray(el, controller.history[idx - 1]) ? ['', ''] : el : el)
             console.table(controller.history)
         }
         catch (error) { controller._message(`Function _optimaze() aborted at learning object. ${error.message}.`) }
