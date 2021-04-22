@@ -92,13 +92,13 @@ const velocityChart = {
     setInterval(() => {
       axios.get('/getFreq').then(res => {
         let obj = res.data
-        j += 0.1
+        j += 5.0
         let o = j.toFixed(1)
         config.data.labels.push(o)
         config.data.datasets[0].data.push(obj.highestFreq)
         myChart.update()
       })
-    }, 100)
+    }, 5000)
     return config.data
   },
   options: chart1_2_options,
