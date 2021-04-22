@@ -19,6 +19,7 @@ const autoDriver = {
     save: async pathName => {
         try {
             await autoDriver._check()
+            await writeToFile(config.FOLDER + '/' + pathName + '_backup.json', controller.history, controller)
             await autoDriver._optimaze()
             await writeToFile(config.FOLDER + '/' + pathName + '.json', controller.history, controller)
             await controller.pathHasBeenSaved()
@@ -40,10 +41,10 @@ const autoDriver = {
                 })
             }
             let idx = 0
+            let lastFreq, lastCmd = 'stop'
             for await (el of autoDriver.readData) {
-                let lastFreq, lastCmd
-                if (lastFreq !== '') lastFreq = el[0]
-                if (lastCmd !== '') lastCmd = el[1]
+                if (el[0] !== '') lastFreq = el[0]
+                if (el[1] !== '') lastCmd = el[1]
                 states.maxSpeed = false //enable maximum velocity - unlimited
                 if (controller.highestFreq === lastFreq) { //duplicate, set velocity at idx-1
                     let prevIdx = FREQ_ARRAY.findIndex(elFreqArray => elFreqArray == lastFreq) - 1
