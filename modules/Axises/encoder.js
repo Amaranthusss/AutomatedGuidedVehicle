@@ -1,17 +1,19 @@
-const { showPathsList } = require("../../server/controllers/AutoDriver")
+class Encoder {
+    constructor(axis, upButton, downButton) {
+        this.axis = axis
+        this.upButton = upButton
+        this.downButton = downButton
+        this.c = 0
+        this.upButton.on('up', () => {
+            this.c++
+            this.getPosition()
+        })
 
-const encoderHandler = ({ upButton, downButton, getPosition }) => {
-    let c = 1
-
-    upButton.on('up', () => {
-        c++
-        getPosition()
-    })
-
-    downButton.on('up', () => {
-        c--
-        getPosition()
-    })
-    function getPosition() { console.log(c) }
+        this.downButton.on('up', () => {
+            this.c--
+            this.getPosition()
+        })
+    }
+    getPosition() { this.axis._message(`Encoder at position ${this.c}.`) }
 }
-module.exports = encoderHandler
+module.exports = Encoder

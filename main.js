@@ -7,13 +7,13 @@ const config = require('./config/config')
 //___________ Modules ___________
 const arduino = require('./modules/Arduino')
 //___________ Communication ___________
-if (arduino.status = 'ready') {
-    asyncServer.on('connection', function connection(con) {
-        setTimeout(() => {
-            setInterval(() => {
-                rearScanner.commitData(con)
-                frontScanner.commitData(con)
-            }, 1)
-        }, config.SCANNERS.DELAY_TO_START)
-    })
-}
+// if (arduino.status = 'ready') {
+//     asyncServer.on('connection', function connection(con) {
+//         setTimeout(() => {
+//             setInterval(() => {
+//                 rearScanner.commitData(con)
+//                 frontScanner.commitData(con)
+//             }, 1)
+//         }, config.SCANNERS.DELAY_TO_START)
+//     })
+// }

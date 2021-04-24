@@ -4,10 +4,8 @@ const config = require('../../config/config').AXISES
 const { _cmdRead } = require('./commands')
 const Gpio = require('pigpio').Gpio
 const { states } = require('./controllerStates')
-
 const five = require('johnny-five')
-const arduino = require('../Arduino').arduino
-const encoderHandler = require('./encoder')
+const Encoder = require('./encoder')
 
 class Axis extends Module {
     constructor(...params) {
@@ -22,12 +20,7 @@ class Axis extends Module {
         }
         this.hardware.en.digitalWrite(!config.ENABLE)
         this.velocity = { freq: 0, speed: 0.0 }
-
-        encoderHandler({
-            upButton: this.hardware.upButton,
-            downButton: this.hardware.downButton
-        })
-
+        this.encoder = new Encoder(this, this.hardware.upButton, this.hardware.downButton)
         this._getReady()
     }
     drive(cmd) {
