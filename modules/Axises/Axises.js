@@ -1,11 +1,13 @@
 const { Module } = require('../Module')
 const pinout = require('../../config/pinout').axises
 const config = require('../../config/config').AXISES
-const arduino = require('../Arduino').arduino
 const { _cmdRead } = require('./commands')
-const { Pin } = require('johnny-five')
 const Gpio = require('pigpio').Gpio
 const { states } = require('./controllerStates')
+
+const five = require('johnny-five')
+const arduino = require('../Arduino').arduino
+const encoderHandler = require('./encoder')
 
 class Axis extends Module {
     constructor(...params) {
@@ -15,40 +17,18 @@ class Axis extends Module {
             en: new Gpio(this.hardware.pinout.motor.en, { mode: Gpio.OUTPUT }),
             dir: new Gpio(this.hardware.pinout.motor.dir, { mode: Gpio.OUTPUT }),
             step: new Gpio(this.hardware.pinout.motor.step, { mode: Gpio.OUTPUT }),
-            a: arduino.pinMode(this.hardware.pinout.encoder.a, Pin.INPUT),
-            b: arduino.pinMode(this.hardware.pinout.encoder.b, Pin.INPUT)
-        }
-        this.encoding = {
-            lastState: null,
-            a: null,
-            b: null,
-            i: 0,
-            tEnd: [],
-            dir: false
+            upButton: new five.Button(this.hardware.pinout.encoder.a),
+            downButton: new five.Button(this.hardware.pinout.encoder.b),
         }
         this.hardware.en.digitalWrite(!config.ENABLE)
         this.velocity = { freq: 0, speed: 0.0 }
-        //arduino.digitalRead(this.hardware.pinout.encoder.a, value => { this.encoding.lastState = value })
-        //this.encodingInterval = setInterval(() => this._encodingLoop(), config.ENCODING_INTERVAL)
+
+        encoderHandler({
+            upButton: this.hardware.upButton,
+            downButton: this.hardware.downButton
+        })
+
         this._getReady()
-    }
-    _encodingLoop() {
-        let tSt = new Date().getTime()
-        arduino.digitalRead(this.hardware.pinout.encoder.a, value => { this.encoding.a = value })
-        if (this.encoding.a != this.encoderState) {
-            this.encoding.tEnd.push(Date().getTime - tSt)
-            arduino.digitalRead(this.hardware.b, value => { this.encoding.b = value })
-            if (this.encoding.b != this.encoding.a) {
-                this.encoding.i++
-                this.encoding.dir = true
-            }
-            else {
-                this.encoding.i--
-                this.encoding.dir = false
-            }
-            console.log('i', this.encoding.i, 'tEnd', this.encoding.tEnd)
-        }
-        this.encoderState = this.encoding.a
     }
     drive(cmd) {
         //If velocity is too low for torsions turn off slower motors
