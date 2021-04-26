@@ -13,7 +13,7 @@ board.on("ready", function () {
     const raspberryPi = require('./RaspberryPi/RaspberryPi')
     const motherboard = require('./Motherboard/Motherboard')
     const rearScanner = require('./Scanners/Scanners').rearScanner
-    //const frontScanner = require('./Scanners/Scanners').frontScanner
+    const frontScanner = require('./Scanners/Scanners').frontScanner
     const brakeLight = require('./BrakeLight/BrakeLight')
     //const leftLight = require('./Lighting/Lighting').leftLight
     //const middleLight = require('./Lighting/Lighting').middleLight

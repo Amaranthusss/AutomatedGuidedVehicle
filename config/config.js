@@ -57,6 +57,8 @@ const AXISES = {
     ACCELERATION: 1000, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
     HARDWARE_PUL_PER_REV: 1600, //Hardware configuration placed at stepper drivers at DIP pins
+    ENCODER_IMPULSES_PER_ROTATION: 20, //Definitied by hardware
+    IMPULSES_PROTECT_TIME: 5//Time to protect algorithm before failed impulses at direction changes [ms] 12km/h=636rmp -> 212 ips -> 1 imp = 4,717 ms
 }
 const LIGHTING = {
     LEFT_STRIP_LENGTH: 12, //Amount of diodes at left strip

@@ -45,7 +45,6 @@ class Scanner extends Module {
         //Turn on sensor's detection
         let startTick
         this.hardware.echo.on('alert', (level, tick) => {
-            this._message('echo on alert')
             if (level == 1) {
                 startTick = tick
             } else {
@@ -58,7 +57,6 @@ class Scanner extends Module {
     /** Stops sending ultrasonic sounds from sensor. */
     stop() { clearInterval(this.interval) }
     _append(value) {
-        this._message('append measure')
         if (value > config.SENSOR_MIN_RANGE && value <= config.SENSOR_MAX_RANGE)
             this.current.data.push(value)
         if (this.current.data.length >= config.PACKAGE_SIZE)
