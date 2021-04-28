@@ -15,6 +15,7 @@ class Encoder {
     }
     _measureSpeed(dir) {
         let currentTime = Date.now()
+        this.axis._message(`At time ${currentTime} counter is equal ${this.c}.`)
         if (currentTime - this.timeAtPrevPos > config.IMPULSES_PROTECT_TIME) { //Eliminate error impulses
             switch (dir) {
                 case true: this.c++; break; //Increase a counter's value

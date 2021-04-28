@@ -34,9 +34,6 @@ class Scanner extends Module {
         this.commitFlag = false
         this._getReady()
         this.start()
-        this.testInterval = setInterval(() => {
-            this.printDebbug()
-        }, 5000)
     }
     /** Starts measurement based at ultrasonic sensor. */
     start() {
@@ -70,9 +67,8 @@ class Scanner extends Module {
             this.angle.value++
         else
             this.angle.value--
-        if (this.angle.ini == true)
-            inRange(this.angle.value, -config.MAX_ANGLE + 1, config.MAX_ANGLE - 1) === false ? this.motor._changeDir() : {}
-        //if (this.angle.value >= config.MAX_ANGLE || this.angle.value <= -config.MAX_ANGLE) this.motor._changeDir()
+        if (this.angle.ini === true && inRange(this.angle.value, { min: -config.MAX_ANGLE + 1, max: config.MAX_ANGLE - 1 }) === false)
+            this.motor._changeDir()
         this.angle.ini = true
     }
     _getSingle() { this.hardware.trig.trigger(config.TRIG_TIME, 1) }
@@ -111,7 +107,10 @@ class Scanner extends Module {
     }
     /** Prints all variables used at scanner class. */
     printDebbug() {
-        this._message(JSON.stringify(this.current))
+        this._message(
+            JSON.stringify(this.output[this.output.length - 1])
+            + JSON.stringify({ rotate: this.motor.rotate, repeater: this.motor.repeater })
+        )
     }
 
 }
