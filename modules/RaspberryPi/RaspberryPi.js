@@ -20,7 +20,7 @@ class RaspberryPi extends Module {
         this.cooling = false
         this.coolerState = 'NaN'
         this.coolerPWM = 0
-        this.refreshDataInterval = setInterval(() => this._refreshData(), config.CHECK_TEMPERATURE_INTERVAL)
+        // this.refreshDataInterval = setInterval(() => this._refreshData(), config.CHECK_TEMPERATURE_INTERVAL)
         this._getReady()
         //this._message(`Initial CPU temperature: ${this.temp}°C, CPU voltage: ${this.voltage}V via node-raspi.`)
     }

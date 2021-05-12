@@ -24,6 +24,9 @@ board.on("ready", function () {
 })
 board.on("exit", () => {
     arStatus = 'exit'
+    for (let i = 0; i < 50; i++)
+        board.digitalWrite(i, 0)
+
 })
 /*
 board.on("message", function (event) {

@@ -60,6 +60,7 @@ class Scanner extends Module {
             this._isolate()
     }
     _analyze() {
+        this.printDebbug()
         this.current.highest = Math.max(...this.current.data)
         this.current.lowest = Math.min(...this.current.data)
         this.current.average = Math.round(this.current.data.reduce((a, b) => a + b, 0) / this.current.data.length)

@@ -39,10 +39,10 @@ const SCANNERS = {
     SENSOR_MIN_RANGE: 3, //Minimum rangoe of distance sensor -> digital low pass filter
     TRIG_PAUSE: 10, //Time at interval to sending requested ultrasonic sound
     TRIG_TIME: 10, //Length of requested ultrasonic sound for each trigger (change is not recommended) -> range of sensors
-    PACKAGE_SIZE: 30, //Amount of correct read data from distance sensor -> velocity of scanners
+    PACKAGE_SIZE: 20, //Amount of correct read data from distance sensor -> velocity of scanners
     MOTOR_STEPS_PAUSE: 7, //Time at interval to achive single pulse step at motors -> velocity of motors
     PULSES_PER_ANGLE: 8, //Amount of pulses required to achive single angle step (recommended multiply of 4) -> velocity of scanner
-    MAX_ANGLE: 35, //Limit of possible steps to change direction of motors -> size of output data array
+    MAX_ANGLE: 50, //Limit of possible steps to change direction of motors -> size of output data array
     TIME_TO_ACHIVE_HOME: 7000, //Time to achive home position (minimum value of angle) by scanners, time is started at arduino's ready status
     DELAY_TO_START: 10000 //Time of delay to start scanning by scanners, time is started at arduino's ready status
 }
@@ -51,14 +51,16 @@ const AXISES = {
     PWM_LOW: 2, //Higher value of PWM should use more current but it is not required (PWM signals are based at edges)
     PWM_MEDIUM: 240,
     MEDIUM_PWM_FREQ_MIN: 1600,
-    ENCODING_INTERVAL: 1, //Time at interval to read and compare state at encoders of each axis
     ENABLE: false, //Default false is enable, true is disable
     DIRECTION: false, //
     ACCELERATION: 1000, //Time at interval to get next level of PWM frequency for each axis
     WHEELS_RADIUS: 0.05, //Radius of each wheel [m]
     HARDWARE_PUL_PER_REV: 1600, //Hardware configuration placed at stepper drivers at DIP pins
-    ENCODER_IMPULSES_PER_ROTATION: 20, //Definitied by hardware
-    IMPULSES_PROTECT_TIME: 5//Time to protect algorithm before failed impulses at direction changes [ms] 12km/h=636rmp -> 212 ips -> 1 imp = 4,717 ms
+    ENCODER: {
+        IMP_PER_ROT: 20, //Definitied by hardware
+        MIN_TIME: 5, //Time to protect algorithm before failed impulses at direction changes [ms] 12km/h=636rmp -> 212 ips -> 1 imp = 4,717 ms
+        MAX_TIME: 1000
+    }
 }
 const LIGHTING = {
     LEFT_STRIP_LENGTH: 12, //Amount of diodes at left strip

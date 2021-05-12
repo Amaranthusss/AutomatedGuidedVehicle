@@ -28,7 +28,7 @@ class Motherboard extends Module {
         this.temperature = 0
         this.alarmDiodeStates = { lowVoltage: false }
         this.coolerStates = { raspiFan: false }
-        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 60000)
+        this.diagVoltageInterval = setInterval(() => { this.getVoltage() }, 100)
         this.hardware.voltageSensor.on("change", () => {
             this.voltage = ((this.hardware.voltageSensor.value * VOLTAGE_SENSOR.ARDUNIO_REFERENCE / 1024)
                 / (VOLTAGE_SENSOR.LOWER_RESISTANCE / VOLTAGE_SENSOR.HIGHER_RESISTANCE) + VOLTAGE_SENSOR.VOLTAGE_OFFSET_CALIBRATION).toFixed(2)
@@ -40,16 +40,24 @@ class Motherboard extends Module {
         this.voltageHistory = []
         this.currentHistory = []
         this.frequencyHistory = []
-        setTimeout(() => {
-            writeToFile(FOLDER + '/history.json',
-                {
-                    voltage: this.voltageHistory,
-                    current: this.currentHistory,
-                    frequency: this.frequencyHistory,
-                }
-                , this)
+        this.TESTTODELETE = 0
+        setInterval(() => {
+            this.TESTTODELETE++
+            let str = JSON.stringify({
+                voltage: this.voltageHistory,
+                current: this.currentHistory,
+                frequency: this.frequencyHistory,
+            })
+            let str1 = str.replace(/{|}|\[|\]|"|voltage|:/g, '')
+            let str2 = str1.replace(/,/g, '	')
+            let str3 = str2.replace(/\./g, ',')
+            let str4 = str3.replace(/current|frequency/g, '\n')
+            writeToFile(FOLDER + '/history_' + this.TESTTODELETE + '.txt', str4, this)
             this._message('History has been wroten.')
-        }, 120000);
+            this.voltageHistory = []
+            this.currentHistory = []
+            this.frequencyHistory = []
+        }, 15000)
         this._getReady()
     }
     getVoltage() {

@@ -73,8 +73,10 @@ class Axis extends Module {
     }
     _freqToSpeed() {
         //V = ((2 * PI * r ) / 60) * (f / Res * 60) = 7.2 * PI * r * f / Res [km/h]
-        this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
-            / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+        // this.velocity.speed = (7.2 * Math.PI * config.WHEELS_RADIUS * this.hardware.step.getPwmFrequency()
+        //     / (config.HARDWARE_PUL_PER_REV)).toFixed(2)
+        this.velocity.speed = (((2 * Math.PI * config.WHEELS_RADIUS) / 60) *
+            (this.hardware.step.getPwmFrequency() / config.HARDWARE_PUL_PER_REV * 60)).toFixed(2)
     }
 }
 
@@ -98,6 +100,7 @@ class Controller extends Module {
         this.leftRearAxis.drive(cmd)
         this.rightFrontAxis.drive(cmd)
         this.rightRearAxis.drive(cmd)
+        console.log(this.leftFrontAxis.velocity.freq)
     }
     turnLeft(autoMode) {
         const cmd = 'turnLeft'
@@ -184,5 +187,51 @@ class Controller extends Module {
     }
 }
 const controller = new Controller('Controller')
+
+let mode = false
+function go() {
+    controller.stop()
+    controller.goForward()
+    controller.goForward()
+    controller.goForward()
+    controller.goForward()
+    controller.goForward()
+    controller.goForward()
+    controller.goForward()
+    mode = true
+}
+function back() {
+    controller.stop()
+    controller.goBackward()
+    controller.goBackward()
+    controller.goBackward()
+    controller.goBackward()
+    controller.goBackward()
+    controller.goBackward()
+    controller.goBackward()
+    mode = false
+}
+go()
+setInterval(() => {
+    if (mode === false) go()
+    else back()
+}, 15000)
+
+// setTimeout(() => {
+//     let ileJuzBylo = 0
+//     const testowyInterwal = setInterval(() => {
+//         controller.goForward()
+//         ileJuzBylo++
+//         if (ileJuzBylo >= 10) {
+//             clearInterval(testowyInterwal)
+//             controller.stop()
+//         }
+//     }, 3000)
+// }, 10000)
+// back()
+// setTimeout(() => {
+//     controller.stop()
+// }, 15000)
+
 
 module.exports = controller
