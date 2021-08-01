@@ -59,16 +59,16 @@ class Axis extends Module {
         }
         controller.highestFreq = this.velocity.freq //Information for displaying at frontend about the highest frequency
         let output = [controller.highestFreq, reCmd]
-        // console.log(this.name, '[',
-        //     this.hardware.step.getPwmFrequency(), 'Hz ] [',
-        //     //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
-        //     this.velocity.speed, 'km/h ] [',
-        //     this.velocity.freq, 'Hz[set] ] [',
-        //     this.hardware.en.digitalRead(), 'en ] [',
-        //     this.hardware.dir.digitalRead(), 'dir ] [',
-        //     states.stopAccelerating, 'stopAcce ] [',
-        //     reCmd, cmd, ' ]'
-        // )
+        console.log(this.name, '[',
+            this.hardware.step.getPwmFrequency(), 'Hz ] [',
+            //this.hardware.step.getPwmDutyCycle(), 'pwm ] [',
+            this.velocity.speed, 'km/h ] [',
+            this.velocity.freq, 'Hz[set] ] [',
+            this.hardware.en.digitalRead(), 'en ] [',
+            this.hardware.dir.digitalRead(), 'dir ] [',
+            states.stopAccelerating, 'stopAcce ] [',
+            reCmd, cmd, ' ]'
+        )
         return output
     }
     _freqToSpeed() {
@@ -187,51 +187,5 @@ class Controller extends Module {
     }
 }
 const controller = new Controller('Controller')
-
-let mode = false
-function go() {
-    controller.stop()
-    controller.goForward()
-    controller.goForward()
-    controller.goForward()
-    controller.goForward()
-    controller.goForward()
-    controller.goForward()
-    controller.goForward()
-    mode = true
-}
-function back() {
-    controller.stop()
-    controller.goBackward()
-    controller.goBackward()
-    controller.goBackward()
-    controller.goBackward()
-    controller.goBackward()
-    controller.goBackward()
-    controller.goBackward()
-    mode = false
-}
-go()
-setInterval(() => {
-    if (mode === false) go()
-    else back()
-}, 15000)
-
-// setTimeout(() => {
-//     let ileJuzBylo = 0
-//     const testowyInterwal = setInterval(() => {
-//         controller.goForward()
-//         ileJuzBylo++
-//         if (ileJuzBylo >= 10) {
-//             clearInterval(testowyInterwal)
-//             controller.stop()
-//         }
-//     }, 3000)
-// }, 10000)
-// back()
-// setTimeout(() => {
-//     controller.stop()
-// }, 15000)
-
 
 module.exports = controller

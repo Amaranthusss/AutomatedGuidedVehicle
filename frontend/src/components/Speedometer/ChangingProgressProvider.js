@@ -1,4 +1,5 @@
 import React from "react"
+import Cookies from 'js-cookie'
 
 class ChangingProgressProvider extends React.Component {
     constructor(props) {
@@ -12,7 +13,7 @@ class ChangingProgressProvider extends React.Component {
 
     componentDidMount() {
         setInterval(() => {
-            this.setState({ currentValue: (Math.floor(Math.random() * 12) + 1 + Math.random()).toFixed(2) })
+            this.setState({ currentValue: Cookies.get('_velocity') })
         }, this.intervalTime)
     }
 

@@ -27,23 +27,12 @@ import RadialSeparators from '../components/Speedometer/RadialSeparators'
 
 // reactstrap components
 import {
-  Button,
-  ButtonGroup,
   Card,
   CardHeader,
   CardBody,
   CardTitle,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  Label,
-  FormGroup,
-  Input,
-  Table,
   Row,
   Col,
-  UncontrolledTooltip,
 } from "reactstrap";
 
 // core components
@@ -74,7 +63,7 @@ function Dashboard(props) {
     <>
       <div className="content">
         <Row>
-          <Col lg="4">
+          <Col lg="6">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
@@ -85,7 +74,7 @@ function Dashboard(props) {
               </CardBody>
             </Card>
           </Col>
-          <Col lg="4">
+          <Col lg="6">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
@@ -103,7 +92,7 @@ function Dashboard(props) {
                         <CircularProgressbar
                           value={value}
                           text={`${value} km/h`}
-                          maxValue={12}
+                          maxValue={5}
                           circleRatio={0.75}
                           strokeWidth={4}
                           styles={buildStyles({
@@ -123,7 +112,7 @@ function Dashboard(props) {
               </CardBody>
             </Card>
           </Col>
-          <Col lg="4">
+          {/* <Col lg="4">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Front Scanner</h5>
@@ -135,16 +124,16 @@ function Dashboard(props) {
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={charts.chartExample4.data}
-                    options={charts.chartExample4.options}
+                    data={charts.frontScannerChart.data}
+                    options={charts.frontScannerChart.options}
                   />
                 </div>
               </CardBody>
             </Card>
-          </Col>
+          </Col> */}
         </Row>
         <Row>
-          <Col lg="4">
+          <Col lg="6">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
@@ -163,7 +152,7 @@ function Dashboard(props) {
               </CardBody>
             </Card>
           </Col>
-          <Col lg="4">
+          <Col lg="6">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Movements</h5>
@@ -177,7 +166,7 @@ function Dashboard(props) {
               </CardBody>
             </Card>
           </Col>
-          <Col lg="4">
+          {/* <Col lg="4">
             <Card className="card-chart">
               <CardHeader>
                 <h5 className="card-category">Rear Scanner</h5>
@@ -195,7 +184,7 @@ function Dashboard(props) {
                 </div>
               </CardBody>
             </Card>
-          </Col>
+          </Col> */}
         </Row>
 
       </div>

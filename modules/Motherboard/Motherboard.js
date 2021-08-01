@@ -40,24 +40,6 @@ class Motherboard extends Module {
         this.voltageHistory = []
         this.currentHistory = []
         this.frequencyHistory = []
-        this.TESTTODELETE = 0
-        setInterval(() => {
-            this.TESTTODELETE++
-            let str = JSON.stringify({
-                voltage: this.voltageHistory,
-                current: this.currentHistory,
-                frequency: this.frequencyHistory,
-            })
-            let str1 = str.replace(/{|}|\[|\]|"|voltage|:/g, '')
-            let str2 = str1.replace(/,/g, '	')
-            let str3 = str2.replace(/\./g, ',')
-            let str4 = str3.replace(/current|frequency/g, '\n')
-            writeToFile(FOLDER + '/history_' + this.TESTTODELETE + '.txt', str4, this)
-            this._message('History has been wroten.')
-            this.voltageHistory = []
-            this.currentHistory = []
-            this.frequencyHistory = []
-        }, 15000)
         this._getReady()
     }
     getVoltage() {

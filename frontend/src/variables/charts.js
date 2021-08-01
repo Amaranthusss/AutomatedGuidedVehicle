@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 // import client from '../server/clientWebSocket'
 
 const chart1_2_options = {
@@ -92,6 +93,10 @@ const velocityChart = {
     setInterval(() => {
       axios.get('/getFreq').then(res => {
         let obj = res.data
+        Cookies.set('_velocity',
+          (((2 * Math.PI * 0.05) / 60) *
+            (obj.highestFreq / 1600 * 60)).toFixed(2)
+        )
         j += 0.5
         let o = j.toFixed(1)
         config.data.labels.push(o)
@@ -104,19 +109,24 @@ const velocityChart = {
   options: chart1_2_options,
 }
 
-const chartExample2 = {
+const frontScannerChart = {
   data: (canvas) => {
-    var ctx = canvas.getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
-    gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)")
-    gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)")
-    gradientStroke.addColorStop(0, "rgba(29,140,248,0)")
+    const ini = {
+      x: [],
+      y: []
+    }
+    let i = ini.x[ini.x.length - 1]
+    var ctx = canvas.getContext("2d")
+    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+    gradientStroke.addColorStop(1, "rgba(66,134,121,0.15)");
+    gradientStroke.addColorStop(0.4, "rgba(66,134,121,0.0)"); //green colors
+    gradientStroke.addColorStop(0, "rgba(66,134,121,0)"); //green colors
     var config = {
       type: 'line',
       data: {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        labels: ini.x,
         datasets: [{
-          label: "My First dataset",
+          label: "Distance at front scanner, cm",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -130,18 +140,24 @@ const chartExample2 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [65, 0, 80, 81, 56, 85, 40],
+          data: ini.y,
         }]
       }
     };
 
-    var myChart = new Chart(ctx, config);
-
-    setInterval(function () {
-      config.data.labels.push('Test');
-      config.data.datasets[0].data.push(Math.random() * 255);
-      myChart.update();
-    }, 3000)
+    var myChart = new Chart(ctx, config)
+    let j = 0
+    setInterval(() => {
+      axios.get('/frontScanner').then(res => {
+        let obj = res.data
+        Cookies.set('_frontScanner', obj.highestFreq)
+        j += 0.5
+        let o = j.toFixed(1)
+        config.data.labels.push(o)
+        config.data.datasets[0].data.push(obj.highestFreq)
+        myChart.update()
+      })
+    }, 500)
     return config.data
   },
   options: chart1_2_options,
@@ -155,7 +171,7 @@ const rearScannerChart = {
     }
     let i = ini.x[ini.x.length - 1]
     var ctx = canvas.getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
+    let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
     gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)")
     gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)")
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)")
@@ -288,7 +304,7 @@ const chartExample4 = {
 
 export default {
   velocityChart: velocityChart,
-  chartExample2: chartExample2,
   rearScannerChart: rearScannerChart,
-  chartExample4: chartExample4
+  chartExample4: chartExample4,
+  frontScannerChart: frontScannerChart
 }

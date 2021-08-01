@@ -10,6 +10,7 @@ const AutoDriver = require('../controllers/AutoDriver')
 router.get('/', PagesController.home)
 
 router.get('/frontScanner', ScannerController.sendToSite)
+router.get('/rearScanner', ScannerController.sendToSite)
 router.post('/feedback', ScannerController.get)
 
 router.get('/getFreq', DisplayController.setFreqDisplay)

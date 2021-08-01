@@ -81,9 +81,7 @@ function AdminNavbar(props) {
           </NavbarToggler>
           <Collapse navbar isOpen={collapseOpen}>
             <Nav className="ml-auto" navbar>
-              IKONKA
-              IKONKA
-              IKONKA
+              Automated Guided Vehicle - mgr inż. Szkurłat Oskar
               <li className="separator d-lg-none" />
             </Nav>
           </Collapse>
